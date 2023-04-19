@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/5.5/engine/Shopware/Components/Plugin/schema/config.xsd">
+
+    <elements>
+
+        <!-- General settings -->
+        <element type="button">
+            <name>buttonGeneral</name>
+            <label lang="de">&#60;b&#62;Grundeinstellungen&#60;/b&#62;</label>
+            <label lang="en">&#60;b&#62;General settings&#60;/b&#62;</label>
+        </element>
+
+        <!-- articleKey -->
+        <element type="select">
+            <name>articleKey</name>
+            <label lang="de">Artikel-Schlüssel</label>
+            <label lang="en">Article key</label>
+            <value>ordernumber</value>
+            <store>
+                <option>
+                    <value>ordernumber</value>
+                    <label lang="de">Artikelnummer</label>
+                    <label lang="en">article number</label>
+                </option>
+                <option>
+                    <value>ean</value>
+                    <label lang="de">EAN</label>
+                    <label lang="en">EAN</label>
+                </option>
+            </store>
+        </element>
+
+        <!-- stockUpdateInterval -->
+        <element type="number">
+            <name>stockUpdateInterval</name>
+            <label lang="de">Bestandsupdates der letzten X Minuten importieren</label>
+            <label lang="en">Update stock updates of last X minutes</label>
+            <value>15</value>
+        </element>
+
+        <!-- errorMailAddresses -->
+        <element type="text" scope="shop">
+            <name>errorMailAddresses</name>
+            <label lang="de">Fehler Mail-Adressen</label>
+            <label lang="en">Error mail addresses</label>
+            <description lang="de">Hier können mehrere E-Mail-Adressen kommagetrennt hinterlegt werden, an die Fehlermeldungen gesendet werden sollen.</description>
+            <description lang="en">Provide one or more mail addresses (separated by comma) to send error reports to.</description>
+        </element>
+
+        <!-- useStaging -->
+        <element type="boolean" scope="shop">
+            <name>useStaging</name>
+            <label lang="de">Staging-API benutzen</label>
+            <label lang="en">Use staging API</label>
+        </element>
+
+        <!-- Production API -->
+        <element type="button">
+            <name>buttonProductionApi</name>
+            <label lang="de">&#60;b&#62;Production API&#60;/b&#62;</label>
+            <label lang="en">&#60;b&#62;Production API&#60;/b&#62;</label>
+        </element>
+
+        <!-- merchantCodeProduction -->
+        <element type="text" scope="shop">
+            <name>merchantCodeProduction</name>
+            <label lang="de">Merchant Code</label>
+            <label lang="en">Merchant Code</label>
+        </element>
+
+        <!-- shopCodeProduction -->
+        <element type="text" scope="shop">
+            <name>shopCodeProduction</name>
+            <label lang="de">Shop Code</label>
+            <label lang="en">Shop Code</label>
+        </element>
+
+        <!-- apiUserProduction -->
+        <element type="text" scope="shop">
+            <name>apiUserProduction</name>
+            <label lang="de">Nutzer</label>
+            <label lang="en">User</label>
+        </element>
+
+        <!-- apiPasswordProduction -->
+        <element type="password" scope="shop">
+            <name>apiPasswordProduction</name>
+            <label lang="de">Passwort</label>
+            <label lang="en">Password</label>
+        </element>
+
+        <!-- Staging API -->
+        <element type="button">
+            <name>buttonStagingApi</name>
+            <label lang="de">&#60;b&#62;Staging API&#60;/b&#62;</label>
+            <label lang="en">&#60;b&#62;Staging API&#60;/b&#62;</label>
+        </element>
+
+        <!-- merchantCodeStaging -->
+        <element type="text" scope="shop">
+            <name>merchantCodeStaging</name>
+            <label lang="de">Merchant Code</label>
+            <label lang="en">Merchant Code</label>
+        </element>
+
+        <!-- shopCodeStaging -->
+        <element type="text" scope="shop">
+            <name>shopCodeStaging</name>
+            <label lang="de">Shop Code</label>
+            <label lang="en">Shop Code</label>
+        </element>
+
+        <!-- apiUserStaging -->
+        <element type="text" scope="shop">
+            <name>apiUserStaging</name>
+            <label lang="de">Nutzer</label>
+            <label lang="en">User</label>
+        </element>
+
+        <!-- apiPasswordStaging -->
+        <element type="password" scope="shop">
+            <name>apiPasswordStaging</name>
+            <label lang="de">Passwort</label>
+            <label lang="en">Password</label>
+        </element>
+
+        <!-- Status -->
+        <element type="button">
+            <name>buttonStatus</name>
+            <label lang="de">&#60;b&#62;Status-Einstellungen&#60;/b&#62;</label>
+            <label lang="en">&#60;b&#62;Status settings&#60;/b&#62;</label>
+        </element>
+
+        <!-- paymentStatusId -->
+        <element type="combo" scope="shop">
+            <name>paymentStatusId</name>
+            <label lang="de">Zahlungsstatus</label>
+            <label lang="en">Payment status</label>
+            <description lang="de">Nur Bestellungen mit diesem Zahlungsstatus werden übertragen.</description>
+            <description lang="en">Only orders with this payment status will be transferred.</description>
+            <store>Shopware.apps.Base.store.PaymentStatus</store>
+            <options>
+                <multiSelect>false</multiSelect>
+                <valueField>id</valueField>
+                <displayField>description</displayField>
+                <isCustomStore>true</isCustomStore>
+            </options>
+        </element>
+
+        <!-- newStatus -->
+        <element type="combo">
+            <name>newStatus</name>
+            <label lang="de">Bestellstatus "neu"</label>
+            <label lang="en">Order status "new"</label>
+            <store>Shopware.apps.Base.store.OrderStatus</store>
+            <options>
+                <multiSelect>false</multiSelect>
+                <valueField>id</valueField>
+                <displayField>description</displayField>
+                <isCustomStore>true</isCustomStore>
+            </options>
+        </element>
+
+        <!-- openStatus -->
+        <element type="combo">
+            <name>openStatus</name>
+            <label lang="de">Bestellstatus "offen"</label>
+            <label lang="en">Order status "open"</label>
+            <store>Shopware.apps.Base.store.OrderStatus</store>
+            <options>
+                <multiSelect>false</multiSelect>
+                <valueField>id</valueField>
+                <displayField>description</displayField>
+                <isCustomStore>true</isCustomStore>
+            </options>
+        </element>
+
+        <!-- rejectedStatus -->
+        <element type="combo">
+            <name>rejectedStatus</name>
+            <label lang="de">Bestellstatus "Abgelehnt"</label>
+            <label lang="en">Order status "rejected"</label>
+            <store>Shopware.apps.Base.store.OrderStatus</store>
+            <options>
+                <multiSelect>false</multiSelect>
+                <valueField>id</valueField>
+                <displayField>description</displayField>
+                <isCustomStore>true</isCustomStore>
+            </options>
+        </element>
+
+        <!-- canceledStatus -->
+        <element type="combo">
+            <name>canceledStatus</name>
+            <label lang="de">Bestellstatus "Abgebrochen"</label>
+            <label lang="en">Order status "canceled"</label>
+            <store>Shopware.apps.Base.store.OrderStatus</store>
+            <options>
+                <multiSelect>false</multiSelect>
+                <valueField>id</valueField>
+                <displayField>description</displayField>
+                <isCustomStore>true</isCustomStore>
+            </options>
+        </element>
+
+        <!-- readyStatus -->
+        <element type="combo">
+            <name>readyStatus</name>
+            <label lang="de">Bestellstatus "bereit"</label>
+            <label lang="en">Order status "ready"</label>
+            <store>Shopware.apps.Base.store.OrderStatus</store>
+            <options>
+                <multiSelect>false</multiSelect>
+                <valueField>id</valueField>
+                <displayField>description</displayField>
+                <isCustomStore>true</isCustomStore>
+            </options>
+        </element>
+
+        <!-- fulfilledStatus -->
+        <element type="combo">
+            <name>fulfilledStatus</name>
+            <label lang="de">Bestellstatus "erfüllt"</label>
+            <label lang="en">Order status "fulfilled"</label>
+            <store>Shopware.apps.Base.store.OrderStatus</store>
+            <options>
+                <multiSelect>false</multiSelect>
+                <valueField>id</valueField>
+                <displayField>description</displayField>
+                <isCustomStore>true</isCustomStore>
+            </options>
+        </element>
+
+        <!-- completedStatus -->
+        <element type="combo">
+            <name>completedStatus</name>
+            <label lang="de">Bestellstatus "komplett abgeschlossen"</label>
+            <label lang="en">Order status "completed"</label>
+            <store>Shopware.apps.Base.store.OrderStatus</store>
+            <options>
+                <multiSelect>false</multiSelect>
+                <valueField>id</valueField>
+                <displayField>description</displayField>
+                <isCustomStore>true</isCustomStore>
+            </options>
+        </element>
+
+        <!-- inProgressStatus -->
+        <element type="combo">
+            <name>inProgressStatus</name>
+            <label lang="de">Bestellstatus "in Bearbeitung"</label>
+            <label lang="en">Order status "in progress"</label>
+            <store>Shopware.apps.Base.store.OrderStatus</store>
+            <options>
+                <multiSelect>false</multiSelect>
+                <valueField>id</valueField>
+                <displayField>description</displayField>
+                <isCustomStore>true</isCustomStore>
+            </options>
+        </element>
+
+        <!-- URLs -->
+        <element type="button">
+            <name>buttonUrls</name>
+            <label lang="de">&#60;b&#62;URLs&#60;/b&#62;</label>
+            <label lang="en">&#60;b&#62;URLs&#60;/b&#62;</label>
+        </element>
+
+        <!-- orderStatusUrl -->
+        <element type="text" scope="shop">
+            <name>orderStatusUrl</name>
+            <label lang="de">Bestellstatus-Updates</label>
+            <label lang="en">order status updates</label>
+            <options>
+                <disabled>true</disabled>
+            </options>
+        </element>
+
+        <!-- deliveryConfirmationUrl -->
+        <element type="text" scope="shop">
+            <name>deliveryConfirmationUrl</name>
+            <label lang="de">Versandmeldungen</label>
+            <label lang="en">Delivery confirmations</label>
+            <options>
+                <disabled>true</disabled>
+            </options>
+        </element>
+
+        <!-- returnMailUrl -->
+        <element type="text" scope="shop">
+            <name>returnMailUrl</name>
+            <label lang="de">Retouren-Mail</label>
+            <label lang="en">Return e-mail</label>
+            <options>
+                <disabled>true</disabled>
+            </options>
+        </element>
+
+        <!-- returnConfirmationUrl -->
+        <element type="text" scope="shop">
+            <name>returnConfirmationUrl</name>
+            <label lang="de">Retouren-Eingang</label>
+            <label lang="en">Return confirmation</label>
+            <options>
+                <disabled>true</disabled>
+            </options>
+        </element>
+
+    </elements>
+</config>
