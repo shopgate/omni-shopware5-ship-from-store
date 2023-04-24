@@ -1,0 +1,25 @@
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        
+        <!-- ConfigService -->
+        <service id="SgateShipFromStore\Components\ConfigService" public="true">
+            <argument type="service" id="Shopware\Components\Plugin\Configuration\ReaderInterface" />
+            <argument type="string">%sgate_ship_from_store.plugin_name%</argument>
+        </service>
+
+        <!-- default config -->
+        <service id="sgate_ship_from_store.config.default" class="Dustin\Encapsulation\ArrayEncapsulation">
+            <factory service="SgateShipFromStore\Components\ConfigService" method="getConfig" />
+            <argument type="string">default</argument>
+        </service>
+
+        <!-- per-shop-config -->
+        <service id="sgate_ship_from_store.config.per_shop" class="Dustin\Encapsulation\ArrayEncapsulation">
+            <factory service="SgateShipFromStore\Components\ConfigService" method="getConfig" />
+            <argument type="string">per_shop</argument>
+        </service>
+
+    </services>
+</container>
