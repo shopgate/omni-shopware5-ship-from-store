@@ -35,22 +35,16 @@ class ResolveInstanceofConditionalsPass implements CompilerPassInterface
             }
         }
 
-        $tagsToKeep = [];
-
-        if ($container->hasParameter('container.behavior_describing_tags')) {
-            $tagsToKeep = $container->getParameter('container.behavior_describing_tags');
-        }
-
         foreach ($container->getDefinitions() as $id => $definition) {
-            $container->setDefinition($id, $this->processDefinition($container, $id, $definition, $tagsToKeep));
-        }
-
-        if ($container->hasParameter('container.behavior_describing_tags')) {
-            $container->getParameterBag()->remove('container.behavior_describing_tags');
+            if ($definition instanceof ChildDefinition) {
+                // don't apply "instanceof" to children: it will be applied to their parent
+                continue;
+            }
+            $container->setDefinition($id, $this->processDefinition($container, $id, $definition));
         }
     }
 
-    private function processDefinition(ContainerBuilder $container, string $id, Definition $definition, array $tagsToKeep): Definition
+    private function processDefinition(ContainerBuilder $container, string $id, Definition $definition): Definition
     {
         $instanceofConditionals = $definition->getInstanceofConditionals();
         $autoconfiguredInstanceof = $definition->isAutoconfigured() ? $container->getAutoconfiguredInstanceof() : [];
@@ -65,15 +59,13 @@ class ResolveInstanceofConditionalsPass implements CompilerPassInterface
         $conditionals = $this->mergeConditionals($autoconfiguredInstanceof, $instanceofConditionals, $container);
 
         $definition->setInstanceofConditionals([]);
-        $shared = null;
+        $parent = $shared = null;
         $instanceofTags = [];
         $instanceofCalls = [];
         $instanceofBindings = [];
-        $reflectionClass = null;
-        $parent = $definition instanceof ChildDefinition ? $definition->getParent() : null;
 
         foreach ($conditionals as $interface => $instanceofDefs) {
-            if ($interface !== $class && !($reflectionClass ?? $reflectionClass = $container->getReflectionClass($class, false) ?: false)) {
+            if ($interface !== $class && (!$container->getReflectionClass($class, false))) {
                 continue;
             }
 
@@ -107,14 +99,12 @@ class ResolveInstanceofConditionalsPass implements CompilerPassInterface
         if ($parent) {
             $bindings = $definition->getBindings();
             $abstract = $container->setDefinition('.abstract.instanceof.'.$id, $definition);
+
+            // cast Definition to ChildDefinition
             $definition->setBindings([]);
             $definition = serialize($definition);
-
-            if (Definition::class === \get_class($abstract)) {
-                // cast Definition to ChildDefinition
-                $definition = substr_replace($definition, '53', 2, 2);
-                $definition = substr_replace($definition, 'Child', 44, 0);
-            }
+            $definition = substr_replace($definition, '53', 2, 2);
+            $definition = substr_replace($definition, 'Child', 44, 0);
             /** @var ChildDefinition $definition */
             $definition = unserialize($definition);
             $definition->setParent($parent);
@@ -124,10 +114,10 @@ class ResolveInstanceofConditionalsPass implements CompilerPassInterface
             }
 
             // Don't add tags to service decorators
-            $i = \count($instanceofTags);
-            while (0 <= --$i) {
-                foreach ($instanceofTags[$i] as $k => $v) {
-                    if (null === $definition->getDecoratedService() || \in_array($k, $tagsToKeep, true)) {
+            if (null === $definition->getDecoratedService()) {
+                $i = \count($instanceofTags);
+                while (0 <= --$i) {
+                    foreach ($instanceofTags[$i] as $k => $v) {
                         foreach ($v as $v) {
                             if ($definition->hasTag($k) && \in_array($v, $definition->getTag($k))) {
                                 continue;

@@ -11,8 +11,6 @@
 
 namespace Symfony\Component\DependencyInjection;
 
-use Symfony\Component\DependencyInjection\Argument\RewindableGenerator;
-use Symfony\Component\DependencyInjection\Argument\ServiceLocator as ArgumentServiceLocator;
 use Symfony\Component\DependencyInjection\Exception\EnvNotFoundException;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Exception\ParameterCircularReferenceException;
@@ -24,10 +22,6 @@ use Symfony\Component\DependencyInjection\ParameterBag\FrozenParameterBag;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Contracts\Service\ResetInterface;
 
-// Help opcache.preload discover always-needed symbols
-class_exists(RewindableGenerator::class);
-class_exists(ArgumentServiceLocator::class);
-
 /**
  * Container is a dependency injection container.
  *
@@ -36,17 +30,16 @@ class_exists(ArgumentServiceLocator::class);
  * The container can have four possible behaviors when a service
  * does not exist (or is not initialized for the last case):
  *
- *  * EXCEPTION_ON_INVALID_REFERENCE: Throws an exception at compilation time (the default)
+ *  * EXCEPTION_ON_INVALID_REFERENCE: Throws an exception (the default)
  *  * NULL_ON_INVALID_REFERENCE:      Returns null
  *  * IGNORE_ON_INVALID_REFERENCE:    Ignores the wrapping command asking for the reference
  *                                    (for instance, ignore a setter if the service does not exist)
  *  * IGNORE_ON_UNINITIALIZED_REFERENCE: Ignores/returns null for uninitialized services or invalid references
- *  * RUNTIME_EXCEPTION_ON_INVALID_REFERENCE: Throws an exception at runtime
  *
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Johannes M. Schmitt <schmittjoh@gmail.com>
  */
-class Container implements ContainerInterface, ResetInterface
+class Container implements ResettableContainerInterface
 {
     protected $parameterBag;
     protected $services = [];
@@ -65,7 +58,7 @@ class Container implements ContainerInterface, ResetInterface
 
     public function __construct(ParameterBagInterface $parameterBag = null)
     {
-        $this->parameterBag = $parameterBag ?? new EnvPlaceholderParameterBag();
+        $this->parameterBag = $parameterBag ?: new EnvPlaceholderParameterBag();
     }
 
     /**
@@ -98,7 +91,7 @@ class Container implements ContainerInterface, ResetInterface
     /**
      * Gets the service container parameter bag.
      *
-     * @return ParameterBagInterface
+     * @return ParameterBagInterface A ParameterBagInterface instance
      */
     public function getParameterBag()
     {
@@ -108,19 +101,25 @@ class Container implements ContainerInterface, ResetInterface
     /**
      * Gets a parameter.
      *
-     * @return array|bool|string|int|float|\UnitEnum|null
+     * @param string $name The parameter name
+     *
+     * @return mixed The parameter value
      *
      * @throws InvalidArgumentException if the parameter is not defined
      */
-    public function getParameter(string $name)
+    public function getParameter($name)
     {
         return $this->parameterBag->get($name);
     }
 
     /**
-     * @return bool
+     * Checks if a parameter exists.
+     *
+     * @param string $name The parameter name
+     *
+     * @return bool The presence of parameter in container
      */
-    public function hasParameter(string $name)
+    public function hasParameter($name)
     {
         return $this->parameterBag->has($name);
     }
@@ -128,10 +127,10 @@ class Container implements ContainerInterface, ResetInterface
     /**
      * Sets a parameter.
      *
-     * @param string                                     $name  The parameter name
-     * @param array|bool|string|int|float|\UnitEnum|null $value The parameter value
+     * @param string $name  The parameter name
+     * @param mixed  $value The parameter value
      */
-    public function setParameter(string $name, $value)
+    public function setParameter($name, $value)
     {
         $this->parameterBag->set($name, $value);
     }
@@ -141,8 +140,11 @@ class Container implements ContainerInterface, ResetInterface
      *
      * Setting a synthetic service to null resets it: has() returns false and get()
      * behaves in the same way as if the service was never created.
+     *
+     * @param string      $id      The service identifier
+     * @param object|null $service The service instance
      */
-    public function set(string $id, ?object $service)
+    public function set($id, $service)
     {
         // Runs the internal initializer; used by the dumped container to include always-needed files
         if (isset($this->privates['service_container']) && $this->privates['service_container'] instanceof \Closure) {
@@ -185,9 +187,9 @@ class Container implements ContainerInterface, ResetInterface
      *
      * @param string $id The service identifier
      *
-     * @return bool
+     * @return bool true if the service is defined, false otherwise
      */
-    public function has(string $id)
+    public function has($id)
     {
         if (isset($this->aliases[$id])) {
             $id = $this->aliases[$id];
@@ -205,7 +207,10 @@ class Container implements ContainerInterface, ResetInterface
     /**
      * Gets a service.
      *
-     * @return object|null
+     * @param string $id              The service identifier
+     * @param int    $invalidBehavior The behavior when the service does not exist
+     *
+     * @return object|null The associated service
      *
      * @throws ServiceCircularReferenceException When a circular reference is detected
      * @throws ServiceNotFoundException          When the service is not defined
@@ -213,11 +218,17 @@ class Container implements ContainerInterface, ResetInterface
      *
      * @see Reference
      */
-    public function get(string $id, int $invalidBehavior = /* self::EXCEPTION_ON_INVALID_REFERENCE */ 1)
+    public function get($id, $invalidBehavior = /* self::EXCEPTION_ON_INVALID_REFERENCE */ 1)
     {
-        return $this->services[$id]
+        $service = $this->services[$id]
             ?? $this->services[$id = $this->aliases[$id] ?? $id]
             ?? ('service_container' === $id ? $this : ($this->factories[$id] ?? [$this, 'make'])($id, $invalidBehavior));
+
+        if (!\is_object($service) && null !== $service) {
+            @trigger_error(sprintf('Non-object services are deprecated since Symfony 4.4, please fix the "%s" service which is of type "%s" right now.', $id, \gettype($service)), E_USER_DEPRECATED);
+        }
+
+        return $service;
     }
 
     /**
@@ -264,7 +275,7 @@ class Container implements ContainerInterface, ResetInterface
                     continue;
                 }
                 $lev = levenshtein($id, $knownId);
-                if ($lev <= \strlen($id) / 3 || str_contains($knownId, $id)) {
+                if ($lev <= \strlen($id) / 3 || false !== strpos($knownId, $id)) {
                     $alternatives[] = $knownId;
                 }
             }
@@ -278,9 +289,11 @@ class Container implements ContainerInterface, ResetInterface
     /**
      * Returns true if the given service has actually been initialized.
      *
-     * @return bool
+     * @param string $id The service identifier
+     *
+     * @return bool true if service has already been initialized, false otherwise
      */
-    public function initialized(string $id)
+    public function initialized($id)
     {
         if (isset($this->aliases[$id])) {
             $id = $this->aliases[$id];
@@ -315,7 +328,7 @@ class Container implements ContainerInterface, ResetInterface
     /**
      * Gets all service ids.
      *
-     * @return string[]
+     * @return string[] An array of all defined service ids
      */
     public function getServiceIds()
     {
@@ -335,9 +348,11 @@ class Container implements ContainerInterface, ResetInterface
     /**
      * Camelizes a string.
      *
-     * @return string
+     * @param string $id A string to camelize
+     *
+     * @return string The camelized string
      */
-    public static function camelize(string $id)
+    public static function camelize($id)
     {
         return strtr(ucwords(strtr($id, ['_' => ' ', '.' => '_ ', '\\' => '_ '])), [' ' => '']);
     }
@@ -345,9 +360,11 @@ class Container implements ContainerInterface, ResetInterface
     /**
      * A string to underscore.
      *
-     * @return string
+     * @param string $id The string to underscore
+     *
+     * @return string The underscored string
      */
-    public static function underscore(string $id)
+    public static function underscore($id)
     {
         return strtolower(preg_replace(['/([A-Z]+)([A-Z][a-z])/', '/([a-z\d])([A-Z])/'], ['\\1_\\2', '\\1_\\2'], str_replace('_', '.', $id)));
     }
@@ -355,7 +372,7 @@ class Container implements ContainerInterface, ResetInterface
     /**
      * Creates a service by requiring its factory file.
      */
-    protected function load(string $file)
+    protected function load($file)
     {
         return require $file;
     }
@@ -363,11 +380,13 @@ class Container implements ContainerInterface, ResetInterface
     /**
      * Fetches a variable from the environment.
      *
-     * @return mixed
+     * @param string $name The name of the environment variable
+     *
+     * @return mixed The value to use for the provided environment variable name
      *
      * @throws EnvNotFoundException When the environment variable is not found and has no default value
      */
-    protected function getEnv(string $name)
+    protected function getEnv($name)
     {
         if (isset($this->resolving[$envName = "env($name)"])) {
             throw new ParameterCircularReferenceException(array_keys($this->resolving));
@@ -379,7 +398,9 @@ class Container implements ContainerInterface, ResetInterface
             $this->set($id, new ServiceLocator([]));
         }
         if (!$this->getEnv) {
-            $this->getEnv = \Closure::fromCallable([$this, 'getEnv']);
+            $this->getEnv = new \ReflectionMethod($this, __FUNCTION__);
+            $this->getEnv->setAccessible(true);
+            $this->getEnv = $this->getEnv->getClosure($this);
         }
         $processors = $this->get($id);
 

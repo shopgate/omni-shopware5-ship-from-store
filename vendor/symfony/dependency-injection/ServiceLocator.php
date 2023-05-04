@@ -33,12 +33,7 @@ class ServiceLocator implements ServiceProviderInterface
     private $externalId;
     private $container;
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return mixed
-     */
-    public function get(string $id)
+    public function get($id)
     {
         if (!$this->externalId) {
             return $this->doGet($id);
@@ -62,7 +57,7 @@ class ServiceLocator implements ServiceProviderInterface
         }
     }
 
-    public function __invoke(string $id)
+    public function __invoke($id)
     {
         return isset($this->factories[$id]) ? $this->get($id) : null;
     }
@@ -72,7 +67,7 @@ class ServiceLocator implements ServiceProviderInterface
      *
      * @return static
      */
-    public function withContext(string $externalId, Container $container): self
+    public function withContext(string $externalId, Container $container)
     {
         $locator = clone $this;
         $locator->externalId = $externalId;
@@ -89,7 +84,7 @@ class ServiceLocator implements ServiceProviderInterface
             return new ServiceNotFoundException($id, end($this->loading) ?: null, null, [], $msg);
         }
 
-        $class = debug_backtrace(\DEBUG_BACKTRACE_PROVIDE_OBJECT | \DEBUG_BACKTRACE_IGNORE_ARGS, 4);
+        $class = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 4);
         $class = isset($class[3]['object']) ? \get_class($class[3]['object']) : null;
         $externalId = $this->externalId ?: $class;
 

@@ -11,7 +11,7 @@ class EncapsulationException extends \Exception
      */
     private $encapsulation;
 
-    public function __construct(EncapsulationInterface $encapsulation, string $message = '', int $code = 0, ?Throwable $previous = null)
+    public function __construct(EncapsulationInterface $encapsulation, string $message = '', int $code = 0, ?\Throwable $previous = null)
     {
         $this->encapsulation = $encapsulation;
 

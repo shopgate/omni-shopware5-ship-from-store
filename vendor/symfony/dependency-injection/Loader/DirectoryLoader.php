@@ -21,7 +21,7 @@ class DirectoryLoader extends FileLoader
     /**
      * {@inheritdoc}
      */
-    public function load($file, string $type = null)
+    public function load($file, $type = null)
     {
         $file = rtrim($file, '/');
         $path = $this->locator->locate($file);
@@ -38,19 +38,17 @@ class DirectoryLoader extends FileLoader
                 $this->import($dir, null, false, $path);
             }
         }
-
-        return null;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function supports($resource, string $type = null)
+    public function supports($resource, $type = null)
     {
         if ('directory' === $type) {
             return true;
         }
 
-        return null === $type && \is_string($resource) && str_ends_with($resource, '/');
+        return null === $type && \is_string($resource) && '/' === substr($resource, -1);
     }
 }

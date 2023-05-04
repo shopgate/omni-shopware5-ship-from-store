@@ -6,6 +6,7 @@
         <!-- ConfigService -->
         <service id="SgateShipFromStore\Components\ConfigService" public="true">
             <argument type="service" id="Shopware\Components\Plugin\Configuration\ReaderInterface" />
+            <argument type="service" id="SgateShipFromStore\Components\Shop\ShopIterator" />
             <argument type="string">%sgate_ship_from_store.plugin_name%</argument>
         </service>
 

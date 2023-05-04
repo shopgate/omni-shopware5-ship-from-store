@@ -19,7 +19,7 @@
             <value>ordernumber</value>
             <store>
                 <option>
-                    <value>ordernumber</value>
+                    <value>sku</value>
                     <label lang="de">Artikelnummer</label>
                     <label lang="en">article number</label>
                 </option>

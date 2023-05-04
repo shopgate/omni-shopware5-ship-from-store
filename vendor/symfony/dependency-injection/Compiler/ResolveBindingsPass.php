@@ -12,9 +12,7 @@
 namespace Symfony\Component\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\Argument\BoundArgument;
-use Symfony\Component\DependencyInjection\Argument\ServiceLocatorArgument;
 use Symfony\Component\DependencyInjection\Argument\TaggedIteratorArgument;
-use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
@@ -42,11 +40,11 @@ class ResolveBindingsPass extends AbstractRecursivePass
         try {
             parent::process($container);
 
-            foreach ($this->unusedBindings as [$key, $serviceId, $bindingType, $file]) {
+            foreach ($this->unusedBindings as list($key, $serviceId, $bindingType, $file)) {
                 $argumentType = $argumentName = $message = null;
 
-                if (str_contains($key, ' ')) {
-                    [$argumentType, $argumentName] = explode(' ', $key, 2);
+                if (false !== strpos($key, ' ')) {
+                    list($argumentType, $argumentName) = explode(' ', $key, 2);
                 } elseif ('$' === $key[0]) {
                     $argumentName = $key;
                 } else {
@@ -93,16 +91,11 @@ class ResolveBindingsPass extends AbstractRecursivePass
     /**
      * {@inheritdoc}
      */
-    protected function processValue($value, bool $isRoot = false)
+    protected function processValue($value, $isRoot = false)
     {
         if ($value instanceof TypedReference && $value->getType() === (string) $value) {
             // Already checked
             $bindings = $this->container->getDefinition($this->currentId)->getBindings();
-            $name = $value->getName();
-
-            if (isset($name, $bindings[$name = $value.' $'.$name])) {
-                return $this->getBindingValue($bindings[$name]);
-            }
 
             if (isset($bindings[$value->getType()])) {
                 return $this->getBindingValue($bindings[$value->getType()]);
@@ -115,10 +108,8 @@ class ResolveBindingsPass extends AbstractRecursivePass
             return parent::processValue($value, $isRoot);
         }
 
-        $bindingNames = [];
-
         foreach ($bindings as $key => $binding) {
-            [$bindingValue, $bindingId, $used, $bindingType, $file] = $binding->getValues();
+            list($bindingValue, $bindingId, $used, $bindingType, $file) = $binding->getValues();
             if ($used) {
                 $this->usedBindings[$bindingId] = true;
                 unset($this->unusedBindings[$bindingId]);
@@ -126,21 +117,12 @@ class ResolveBindingsPass extends AbstractRecursivePass
                 $this->unusedBindings[$bindingId] = [$key, $this->currentId, $bindingType, $file];
             }
 
-            if (preg_match('/^(?:(?:array|bool|float|int|string|iterable|([^ $]++)) )\$/', $key, $m)) {
-                $bindingNames[substr($key, \strlen($m[0]))] = $binding;
-            }
-
-            if (!isset($m[1])) {
+            if (preg_match('/^(?:(?:array|bool|float|int|string) )?\$/', $key)) {
                 continue;
             }
 
-            if (is_subclass_of($m[1], \UnitEnum::class)) {
-                $bindingNames[substr($key, \strlen($m[0]))] = $binding;
-                continue;
-            }
-
-            if (null !== $bindingValue && !$bindingValue instanceof Reference && !$bindingValue instanceof Definition && !$bindingValue instanceof TaggedIteratorArgument && !$bindingValue instanceof ServiceLocatorArgument) {
-                throw new InvalidArgumentException(sprintf('Invalid value for binding key "%s" for service "%s": expected "%s", "%s", "%s", "%s" or null, "%s" given.', $key, $this->currentId, Reference::class, Definition::class, TaggedIteratorArgument::class, ServiceLocatorArgument::class, get_debug_type($bindingValue)));
+            if (null !== $bindingValue && !$bindingValue instanceof Reference && !$bindingValue instanceof Definition && !$bindingValue instanceof TaggedIteratorArgument) {
+                throw new InvalidArgumentException(sprintf('Invalid value for binding key "%s" for service "%s": expected null, an instance of %s or an instance of %s or an instance of %s, %s given.', $key, $this->currentId, Reference::class, Definition::class, TaggedIteratorArgument::class, \gettype($bindingValue)));
             }
         }
 
@@ -162,7 +144,7 @@ class ResolveBindingsPass extends AbstractRecursivePass
         }
 
         foreach ($calls as $i => $call) {
-            [$method, $arguments] = $call;
+            list($method, $arguments) = $call;
 
             if ($method instanceof \ReflectionFunctionAbstract) {
                 $reflectionMethod = $method;
@@ -177,61 +159,40 @@ class ResolveBindingsPass extends AbstractRecursivePass
                 }
             }
 
-            $names = [];
-
             foreach ($reflectionMethod->getParameters() as $key => $parameter) {
-                $names[$key] = $parameter->name;
-
                 if (\array_key_exists($key, $arguments) && '' !== $arguments[$key]) {
-                    continue;
-                }
-                if (\array_key_exists($parameter->name, $arguments) && '' !== $arguments[$parameter->name]) {
                     continue;
                 }
 
                 $typeHint = ProxyHelper::getTypeHint($reflectionMethod, $parameter);
-                $name = Target::parseName($parameter);
 
-                if ($typeHint && \array_key_exists($k = ltrim($typeHint, '\\').' $'.$name, $bindings)) {
+                if (\array_key_exists($k = ltrim($typeHint, '\\').' $'.$parameter->name, $bindings)) {
                     $arguments[$key] = $this->getBindingValue($bindings[$k]);
 
                     continue;
                 }
 
-                if (\array_key_exists('$'.$name, $bindings)) {
-                    $arguments[$key] = $this->getBindingValue($bindings['$'.$name]);
+                if (\array_key_exists('$'.$parameter->name, $bindings)) {
+                    $arguments[$key] = $this->getBindingValue($bindings['$'.$parameter->name]);
 
                     continue;
                 }
 
-                if ($typeHint && '\\' === $typeHint[0] && isset($bindings[$typeHint = substr($typeHint, 1)])) {
-                    $arguments[$key] = $this->getBindingValue($bindings[$typeHint]);
-
+                if (!$typeHint || '\\' !== $typeHint[0] || !isset($bindings[$typeHint = substr($typeHint, 1)])) {
                     continue;
                 }
 
-                if (isset($bindingNames[$name]) || isset($bindingNames[$parameter->name])) {
-                    $bindingKey = array_search($binding, $bindings, true);
-                    $argumentType = substr($bindingKey, 0, strpos($bindingKey, ' '));
-                    $this->errorMessages[] = sprintf('Did you forget to add the type "%s" to argument "$%s" of method "%s::%s()"?', $argumentType, $parameter->name, $reflectionMethod->class, $reflectionMethod->name);
-                }
-            }
-
-            foreach ($names as $key => $name) {
-                if (\array_key_exists($name, $arguments) && (0 === $key || \array_key_exists($key - 1, $arguments))) {
-                    $arguments[$key] = $arguments[$name];
-                    unset($arguments[$name]);
-                }
+                $arguments[$key] = $this->getBindingValue($bindings[$typeHint]);
             }
 
             if ($arguments !== $call[1]) {
-                ksort($arguments, \SORT_NATURAL);
+                ksort($arguments);
                 $calls[$i][1] = $arguments;
             }
         }
 
         if ($constructor) {
-            [, $arguments] = array_pop($calls);
+            list(, $arguments) = array_pop($calls);
 
             if ($arguments !== $value->getArguments()) {
                 $value->setArguments($arguments);
@@ -250,7 +211,7 @@ class ResolveBindingsPass extends AbstractRecursivePass
      */
     private function getBindingValue(BoundArgument $binding)
     {
-        [$bindingValue, $bindingId] = $binding->getValues();
+        list($bindingValue, $bindingId) = $binding->getValues();
 
         $this->usedBindings[$bindingId] = true;
         unset($this->unusedBindings[$bindingId]);

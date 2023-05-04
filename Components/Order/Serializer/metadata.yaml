@@ -1,0 +1,112 @@
+SgateShipFromStore\Components\Order\Encapsulation\Order:
+  attributes:
+    externalCode:
+      groups: ['normalization', 'denormalization']
+    shopCode:
+      groups: ['normalization', 'denormalization']
+    type:
+      groups: ['normalization']
+    customerId:
+      groups: ['normalization']
+    externalCustomerNumber:
+      groups: ['normalization', 'denormalization']
+    localeCode:
+      groups: ['normalization', 'denormalization']
+    currencyCode:
+      groups: ['normalization', 'denormalization']
+    status:
+      groups: ['normalization']
+    taxExempt:
+      groups: ['normalization', 'denormalization']
+    notes:
+      groups: ['normalization', 'denormalization']
+    specialInstructions:
+      groups: ['normalization', 'denormalization']
+    addressSequences:
+      groups: ['normalization', 'denormalization']
+    primaryBillToAddressSequenceIndex:
+      groups: ['normalization', 'denormalization']
+    primaryShipToAddressSequenceIndex:
+      groups: ['normalization', 'denormalization']
+    shippingTotal:
+      groups: ['normalization', 'denormalization']
+    domain:
+      groups: ['normalization', 'denormalization']
+    imported:
+      groups: ['normalization']
+    subTotal:
+      groups: ['normalization', 'denormalization']
+    discountAmount:
+      groups: ['normalization', 'denormalization']
+    lineItems:
+      groups: ['normalization', 'denormalization']
+
+SgateShipFromStore\Components\Order\Encapsulation\Address:
+  attributes:
+    type:
+      groups: ['normalization', 'denormalization']
+    firstName:
+      groups: ['normalization', 'denormalization']
+    lastName:
+      groups: ['normalization', 'denormalization']
+    company:
+      groups: ['normalization', 'denormalization']
+    address1:
+      groups: ['normalization', 'denormalization']
+    address2:
+      groups: ['normalization', 'denormalization']
+    address3:
+      groups: ['normalization', 'denormalization']
+    city:
+      groups: ['normalization', 'denormalization']
+    region:
+      groups: ['normalization', 'denormalization']
+    postalCode:
+      groups: ['normalization', 'denormalization']
+    country:
+      groups: ['normalization', 'denormalization']
+    phone:
+      groups: ['normalization', 'denormalization']
+    emailAddress:
+      groups: ['normalization', 'denormalization']
+
+SgateShipFromStore\Components\Order\Encapsulation\Identifiers:
+  attributes:
+    ean:
+      groups: ['normalization', 'denormalization']
+    sku:
+      groups: ['normalization', 'denormalization']
+
+SgateShipFromStore\Components\Order\Encapsulation\LineItem:
+  attributes:
+    code:
+      groups: ['normalization', 'denormalization']
+    quantity:
+      groups: ['normalization', 'denormalization']
+    fulfillmentMethod:
+      groups: ['normalization']
+    fulfillmentLocationCode:
+      groups: ['normalization']
+    shipToAddressSequenceIndex:
+      groups: ['normalization']
+    currencyCode:
+      groups: ['normalization', 'denormalization']
+    extendedPrice:
+      groups: ['normalization', 'denormalization']
+    price:
+      groups: ['normalization', 'denormalization']
+
+SgateShipFromStore\Components\Order\Encapsulation\Product:
+  attributes:
+    code:
+      groups: ['normalization', 'denormalization']
+    name:
+      groups: ['normalization', 'denormalization']
+    price:
+      groups: ['normalization', 'denormalization']
+    salePrice:
+      groups: ['normalization', 'denormalization']
+    currencyCode:
+      groups: ['normalization', 'denormalization']
+    identifiers:
+      groups: ['normalization', 'denormalization']

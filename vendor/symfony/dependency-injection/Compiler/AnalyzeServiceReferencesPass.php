@@ -12,7 +12,6 @@
 namespace Symfony\Component\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\Argument\ArgumentInterface;
-use Symfony\Component\DependencyInjection\Argument\IteratorArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Definition;
@@ -28,7 +27,7 @@ use Symfony\Component\DependencyInjection\Reference;
  * @author Johannes M. Schmitt <schmittjoh@gmail.com>
  * @author Nicolas Grekas <p@tchwork.com>
  */
-class AnalyzeServiceReferencesPass extends AbstractRecursivePass
+class AnalyzeServiceReferencesPass extends AbstractRecursivePass implements RepeatablePassInterface
 {
     private $graph;
     private $currentDefinition;
@@ -36,7 +35,6 @@ class AnalyzeServiceReferencesPass extends AbstractRecursivePass
     private $hasProxyDumper;
     private $lazy;
     private $byConstructor;
-    private $byFactory;
     private $definitions;
     private $aliases;
 
@@ -51,6 +49,14 @@ class AnalyzeServiceReferencesPass extends AbstractRecursivePass
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function setRepeatedPass(RepeatedPass $repeatedPass)
+    {
+        @trigger_error(sprintf('The "%s()" method is deprecated since Symfony 4.2.', __METHOD__), E_USER_DEPRECATED);
+    }
+
+    /**
      * Processes a ContainerBuilder object to populate the service reference graph.
      */
     public function process(ContainerBuilder $container)
@@ -60,7 +66,6 @@ class AnalyzeServiceReferencesPass extends AbstractRecursivePass
         $this->graph->clear();
         $this->lazy = false;
         $this->byConstructor = false;
-        $this->byFactory = false;
         $this->definitions = $container->getDefinitions();
         $this->aliases = $container->getAliases();
 
@@ -76,13 +81,13 @@ class AnalyzeServiceReferencesPass extends AbstractRecursivePass
         }
     }
 
-    protected function processValue($value, bool $isRoot = false)
+    protected function processValue($value, $isRoot = false)
     {
         $lazy = $this->lazy;
         $inExpression = $this->inExpression();
 
         if ($value instanceof ArgumentInterface) {
-            $this->lazy = !$this->byFactory || !$value instanceof IteratorArgument;
+            $this->lazy = true;
             parent::processValue($value->getValues());
             $this->lazy = $lazy;
 
@@ -112,7 +117,7 @@ class AnalyzeServiceReferencesPass extends AbstractRecursivePass
                     $value,
                     $this->lazy || ($targetDefinition && $targetDefinition->isLazy()),
                     true
-                );
+               );
             }
 
             return $value;
@@ -132,11 +137,7 @@ class AnalyzeServiceReferencesPass extends AbstractRecursivePass
 
         $byConstructor = $this->byConstructor;
         $this->byConstructor = $isRoot || $byConstructor;
-
-        $byFactory = $this->byFactory;
-        $this->byFactory = true;
         $this->processValue($value->getFactory());
-        $this->byFactory = $byFactory;
         $this->processValue($value->getArguments());
 
         $properties = $value->getProperties();

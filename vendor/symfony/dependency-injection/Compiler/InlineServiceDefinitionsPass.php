@@ -22,19 +22,28 @@ use Symfony\Component\DependencyInjection\Reference;
  *
  * @author Johannes M. Schmitt <schmittjoh@gmail.com>
  */
-class InlineServiceDefinitionsPass extends AbstractRecursivePass
+class InlineServiceDefinitionsPass extends AbstractRecursivePass implements RepeatablePassInterface
 {
     private $analyzingPass;
+    private $repeatedPass;
     private $cloningIds = [];
     private $connectedIds = [];
     private $notInlinedIds = [];
     private $inlinedIds = [];
-    private $notInlinableIds = [];
     private $graph;
 
     public function __construct(AnalyzeServiceReferencesPass $analyzingPass = null)
     {
         $this->analyzingPass = $analyzingPass;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setRepeatedPass(RepeatedPass $repeatedPass)
+    {
+        @trigger_error(sprintf('The "%s()" method is deprecated since Symfony 4.2.', __METHOD__), E_USER_DEPRECATED);
+        $this->repeatedPass = $repeatedPass;
     }
 
     public function process(ContainerBuilder $container)
@@ -85,11 +94,11 @@ class InlineServiceDefinitionsPass extends AbstractRecursivePass
                 }
             } while ($this->inlinedIds && $this->analyzingPass);
 
-            foreach ($remainingInlinedIds as $id) {
-                if (isset($this->notInlinableIds[$id])) {
-                    continue;
-                }
+            if ($this->inlinedIds && $this->repeatedPass) {
+                $this->repeatedPass->setRepeat();
+            }
 
+            foreach ($remainingInlinedIds as $id) {
                 $definition = $container->getDefinition($id);
 
                 if (!$definition->isShared() && !$definition->isPublic()) {
@@ -99,7 +108,6 @@ class InlineServiceDefinitionsPass extends AbstractRecursivePass
         } finally {
             $this->container = null;
             $this->connectedIds = $this->notInlinedIds = $this->inlinedIds = [];
-            $this->notInlinableIds = [];
             $this->graph = null;
         }
     }
@@ -107,10 +115,10 @@ class InlineServiceDefinitionsPass extends AbstractRecursivePass
     /**
      * {@inheritdoc}
      */
-    protected function processValue($value, bool $isRoot = false)
+    protected function processValue($value, $isRoot = false)
     {
         if ($value instanceof ArgumentInterface) {
-            // References found in ArgumentInterface::getValues() are not inlineable
+            // Reference found in ArgumentInterface::getValues() are not inlineable
             return $value;
         }
 
@@ -130,8 +138,6 @@ class InlineServiceDefinitionsPass extends AbstractRecursivePass
         $definition = $this->container->getDefinition($id);
 
         if (!$this->isInlineableDefinition($id, $definition)) {
-            $this->notInlinableIds[$id] = true;
-
             return $value;
         }
 
@@ -163,7 +169,7 @@ class InlineServiceDefinitionsPass extends AbstractRecursivePass
      */
     private function isInlineableDefinition(string $id, Definition $definition): bool
     {
-        if ($definition->hasErrors() || $definition->isDeprecated() || $definition->isLazy() || $definition->isSynthetic() || $definition->hasTag('container.do_not_inline')) {
+        if ($definition->hasErrors() || $definition->isDeprecated() || $definition->isLazy() || $definition->isSynthetic()) {
             return false;
         }
 
@@ -176,7 +182,7 @@ class InlineServiceDefinitionsPass extends AbstractRecursivePass
                 $srcId = $edge->getSourceNode()->getId();
                 $this->connectedIds[$srcId] = true;
                 if ($edge->isWeak() || $edge->isLazy()) {
-                    return !$this->connectedIds[$id] = true;
+                    return false;
                 }
             }
 
@@ -198,7 +204,9 @@ class InlineServiceDefinitionsPass extends AbstractRecursivePass
 
         $srcIds = [];
         $srcCount = 0;
+        $isReferencedByConstructor = false;
         foreach ($this->graph->getNode($id)->getInEdges() as $edge) {
+            $isReferencedByConstructor = $isReferencedByConstructor || $edge->isReferencedByConstructor();
             $srcId = $edge->getSourceNode()->getId();
             $this->connectedIds[$srcId] = true;
             if ($edge->isWeak() || $edge->isLazy()) {

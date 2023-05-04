@@ -19,6 +19,8 @@ use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
  */
 class PrototypeConfigurator extends AbstractServiceConfigurator
 {
+    const FACTORY = 'load';
+
     use Traits\AbstractTrait;
     use Traits\ArgumentTrait;
     use Traits\AutoconfigureTrait;
@@ -35,8 +37,6 @@ class PrototypeConfigurator extends AbstractServiceConfigurator
     use Traits\ShareTrait;
     use Traits\TagTrait;
 
-    public const FACTORY = 'load';
-
     private $loader;
     private $resource;
     private $excludes;
@@ -45,13 +45,10 @@ class PrototypeConfigurator extends AbstractServiceConfigurator
     public function __construct(ServicesConfigurator $parent, PhpFileLoader $loader, Definition $defaults, string $namespace, string $resource, bool $allowParent)
     {
         $definition = new Definition();
-        if (!$defaults->isPublic() || !$defaults->isPrivate()) {
-            $definition->setPublic($defaults->isPublic());
-        }
+        $definition->setPublic($defaults->isPublic());
         $definition->setAutowired($defaults->isAutowired());
         $definition->setAutoconfigured($defaults->isAutoconfigured());
-        // deep clone, to avoid multiple process of the same instance in the passes
-        $definition->setBindings(unserialize(serialize($defaults->getBindings())));
+        $definition->setBindings($defaults->getBindings());
         $definition->setChanges([]);
 
         $this->loader = $loader;

@@ -12,7 +12,7 @@
 namespace Symfony\Component\DependencyInjection\Compiler;
 
 use Symfony\Component\Config\Definition\BaseNode;
-use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\Config\Definition\Exception\TreeWithoutRootNodeException;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ConfigurationExtensionInterface;
@@ -26,7 +26,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
  */
 class ValidateEnvPlaceholdersPass implements CompilerPassInterface
 {
-    private const TYPE_FIXTURES = ['array' => [], 'bool' => false, 'float' => 0.0, 'int' => 0, 'string' => ''];
+    private static $typeFixtures = ['array' => [], 'bool' => false, 'float' => 0.0, 'int' => 0, 'string' => ''];
 
     private $extensionConfig = [];
 
@@ -48,42 +48,45 @@ class ValidateEnvPlaceholdersPass implements CompilerPassInterface
 
         $defaultBag = new ParameterBag($resolvingBag->all());
         $envTypes = $resolvingBag->getProvidedTypes();
-        foreach ($resolvingBag->getEnvPlaceholders() + $resolvingBag->getUnusedEnvPlaceholders() as $env => $placeholders) {
-            $values = [];
-            if (false === $i = strpos($env, ':')) {
-                $default = $defaultBag->has("env($env)") ? $defaultBag->get("env($env)") : self::TYPE_FIXTURES['string'];
-                $defaultType = null !== $default ? get_debug_type($default) : 'string';
-                $values[$defaultType] = $default;
-            } else {
-                $prefix = substr($env, 0, $i);
-                foreach ($envTypes[$prefix] ?? ['string'] as $type) {
-                    $values[$type] = self::TYPE_FIXTURES[$type] ?? null;
+        try {
+            foreach ($resolvingBag->getEnvPlaceholders() + $resolvingBag->getUnusedEnvPlaceholders() as $env => $placeholders) {
+                $values = [];
+                if (false === $i = strpos($env, ':')) {
+                    $default = $defaultBag->has("env($env)") ? $defaultBag->get("env($env)") : self::$typeFixtures['string'];
+                    $defaultType = null !== $default ? self::getType($default) : 'string';
+                    $values[$defaultType] = $default;
+                } else {
+                    $prefix = substr($env, 0, $i);
+                    foreach ($envTypes[$prefix] ?? ['string'] as $type) {
+                        $values[$type] = self::$typeFixtures[$type] ?? null;
+                    }
+                }
+                foreach ($placeholders as $placeholder) {
+                    BaseNode::setPlaceholder($placeholder, $values);
                 }
             }
-            foreach ($placeholders as $placeholder) {
-                BaseNode::setPlaceholder($placeholder, $values);
+
+            $processor = new Processor();
+
+            foreach ($extensions as $name => $extension) {
+                if (!$extension instanceof ConfigurationExtensionInterface || !$config = array_filter($container->getExtensionConfig($name))) {
+                    // this extension has no semantic configuration or was not called
+                    continue;
+                }
+
+                $config = $resolvingBag->resolveValue($config);
+
+                if (null === $configuration = $extension->getConfiguration($config, $container)) {
+                    continue;
+                }
+
+                try {
+                    $this->extensionConfig[$name] = $processor->processConfiguration($configuration, $config);
+                } catch (TreeWithoutRootNodeException $e) {
+                }
             }
-        }
-
-        $processor = new Processor();
-
-        foreach ($extensions as $name => $extension) {
-            if (!($extension instanceof ConfigurationExtensionInterface || $extension instanceof ConfigurationInterface)
-                || !$config = array_filter($container->getExtensionConfig($name))
-            ) {
-                // this extension has no semantic configuration or was not called
-                continue;
-            }
-
-            $config = $resolvingBag->resolveValue($config);
-
-            if ($extension instanceof ConfigurationInterface) {
-                $configuration = $extension;
-            } elseif (null === $configuration = $extension->getConfiguration($config, $container)) {
-                continue;
-            }
-
-            $this->extensionConfig[$name] = $processor->processConfiguration($configuration, $config);
+        } finally {
+            BaseNode::resetPlaceholders();
         }
 
         $resolvingBag->clearUnusedEnvPlaceholders();
@@ -99,5 +102,19 @@ class ValidateEnvPlaceholdersPass implements CompilerPassInterface
         } finally {
             $this->extensionConfig = [];
         }
+    }
+
+    private static function getType($value): string
+    {
+        switch ($type = \gettype($value)) {
+            case 'boolean':
+                return 'bool';
+            case 'double':
+                return 'float';
+            case 'integer':
+                return 'int';
+        }
+
+        return $type;
     }
 }
