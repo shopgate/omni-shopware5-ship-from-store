@@ -232,6 +232,7 @@ abstract class AbstractNormalizer implements NormalizerInterface, DenormalizerIn
 
         $allowedAttributes = [];
         $ignoreUsed = false;
+
         foreach ($this->classMetadataFactory->getMetadataFor($classOrObject)->getAttributesMetadata() as $attributeMetadata) {
             if ($ignore = $attributeMetadata->isIgnored()) {
                 $ignoreUsed = true;

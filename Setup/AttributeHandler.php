@@ -164,6 +164,23 @@ class AttributeHandler
                     'displayInBackend' => false,
                     'custom' => false,
                 ],
+            ], [
+                'table' => 's_order_attributes',
+                'name' => 'sgate_ship_from_store_order_number',
+                'type' => TypeMapping::TYPE_STRING,
+                'config' => [
+                    'displayInBackend' => true,
+                    'custom' => false,
+                    'label' => 'Shopgate Bestellnummer',
+                ],
+            ], [
+                'table' => 's_user_attributes',
+                'name' => 'sgate_ship_from_store_customer_number',
+                'type' => TypeMapping::TYPE_STRING,
+                'config' => [
+                    'displayInBackend' => false,
+                    'custom' => false,
+                ],
             ],
         ];
     }
@@ -186,6 +203,12 @@ class AttributeHandler
             [
                 'table' => 's_order_attributes',
                 'name' => 'sgate_ship_from_store_exported',
+            ], [
+                'table' => 's_user_attributes',
+                'name' => 'sgate_ship_from_store_customer_number',
+            ], [
+                'table' => 's_order_attributes',
+                'name' => 'sgate_ship_from_store_order_number',
             ],
         ];
     }
