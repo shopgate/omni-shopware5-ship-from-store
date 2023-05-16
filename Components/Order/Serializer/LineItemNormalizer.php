@@ -2,9 +2,11 @@
 
 namespace SgateShipFromStore\Components\Order\Serializer;
 
-use Dustin\ImpEx\Serializer\Normalizer\Converter\SerializerConverter;
+use Dustin\ImpEx\Serializer\Converter\NormalizerConverter;
+use Dustin\ImpEx\Serializer\Converter\Numeric\FloatConverter;
+use Dustin\ImpEx\Serializer\Converter\Numeric\IntConverter;
+use SgateShipFromStore\Components\Order\Encapsulation\Product;
 use SgateShipFromStore\Framework\Serializer\EncapsulationNormalizer;
-use Symfony\Component\Serializer\Serializer;
 
 class LineItemNormalizer extends EncapsulationNormalizer
 {
@@ -15,11 +17,19 @@ class LineItemNormalizer extends EncapsulationNormalizer
 
     protected function createDefaultContext(): array
     {
+        $productNormalizer = new ProductNormalizer($this->metaFile);
+
         return [
             self::CONVERTERS => [
-                'product' => new SerializerConverter(
-                    new Serializer([new ProductNormalizer($this->metaFile)]),
+                'quantity' => new IntConverter(),
+                'shipToAddressSequenceIndex' => new IntConverter(),
+                'extendedPrice' => new FloatConverter(),
+                'price' => new FloatConverter(),
+                'product' => new NormalizerConverter(
+                    $productNormalizer,
+                    $productNormalizer,
                     Product::class,
+                    null,
                     $this
                 ),
             ],

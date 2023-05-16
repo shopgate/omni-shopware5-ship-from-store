@@ -17,9 +17,21 @@
         </service>
 
         <!-- per-shop-config -->
-        <service id="sgate_ship_from_store.config.per_shop" class="Dustin\Encapsulation\ArrayEncapsulation">
+        <service id="sgate_ship_from_store.config.per_shop" class="Dustin\Encapsulation\ArrayEncapsulation" public="true">
             <factory service="SgateShipFromStore\Components\ConfigService" method="getConfig" />
             <argument type="string">per_shop</argument>
+        </service>
+
+        <!-- Logger -->
+        <service id="SgateShipFromStore\Framework\Logger">
+            <argument type="service" id="sgate_ship_from_store.logger" />
+        </service>
+
+        <!-- ExceptionHandler -->
+        <service id="SgateShipFromStore\Framework\ExceptionHandler">
+            <argument type="service" id="SgateShipFromStore\Framework\Logger" />
+            <argument type="service" id="sgate_ship_from_store.config.per_shop" />
+            <argument type="service" id="Shopware\Components\Validator\EmailValidator" />
         </service>
 
     </services>

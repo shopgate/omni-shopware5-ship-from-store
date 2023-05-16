@@ -5,7 +5,7 @@
         
         <!-- OrderNormalizer -->
         <service id="SgateShipFromStore\Components\Order\Serializer\OrderNormalizer">
-            <argument type="string">%sgate_ship_from_store.plugin_dir%/Components/Order/Serializer/metadata.yaml</argument>
+            <argument type="string">%sgate_ship_from_store.plugin_dir%/Resources/metadata.yaml</argument>
         </service>
 
         <!-- OrderReader -->        
@@ -19,12 +19,17 @@
         <service id="sgate_ship_from_store.transferor.order" class="SgateShipFromStore\Framework\Sequence\ReaderTransferor">
             <argument type="service" id="SgateShipFromStore\Components\Order\OrderReader" />
 
-            <tag name="impex.resource" resource="transferor.order" obtainable="0" />
+            <tag name="impex.handling.transferor" sequence="order" />
         </service>
 
-        <!-- OrderApiExporter -->
-        <service id="SgateShipFromStore\Components\Order\Sequence\OrderApiExporter">
-        
+        <!-- OrderExporter -->
+        <service id="SgateShipFromStore\Components\Order\OrderExporter">
+            <argument type="service" id="SgateShipFromStore\Components\Order\Serializer\OrderNormalizer" />
+            <argument type="service" id="SgateShipFromStore\Components\ShopgateSdkRegistry" />
+            <argument type="service" id="SgateShipFromStore\Framework\Logger" />
+            <argument type="service" id="models" />
+            <argument type="service" id="SgateShipFromStore\Framework\ExceptionHandler" />
+
             <tag name="impex.handling" sequence="order" priority="100" />
         </service>
 

@@ -9,20 +9,5 @@
             <argument type="service" id="sgate_ship_from_store.config.per_shop" />
         </service>
 
-        <!-- default sdk -->
-        <service id="sgate_ship_from_store.sdk.default" class="Shopgate\ConnectSdk\ShopgateSdk">
-            <factory service="SgateShipFromStore\Components\ShopgateSdkRegistry" method="getShopgateSdk" />
-        </service>
-
-        <!-- default order service -->
-        <service id="sgate_ship_from_store.shopgate_service.order" class="Shopgate\ConnectSdk\Service\Order">
-            <factory service="sgate_ship_from_store.sdk.default" method="getOrderService" />
-        </service>
-
-        <!-- default catalog service -->
-        <service id="sgate_ship_from_store.shopgate_service.catalog" class="Shopgate\ConnectSdk\Service\Catalog">
-            <factory service="sgate_ship_from_store.sdk.default" method="getCatalogService" />
-        </service>
-
     </services>
 </container>

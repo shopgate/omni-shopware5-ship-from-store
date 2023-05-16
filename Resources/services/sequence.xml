@@ -13,7 +13,12 @@
         <!-- RecordHandlingTaskFactory -->
         <service id="SgateShipFromStore\Framework\Sequence\Task\RecordHandlingTaskFactory">
             <argument type="service" id="Dustin\ImpEx\Sequence\Registry\RecordHandlingRegistry" />
-            <argument type="service" id="Dustin\ImpEx\Resource\ResourceRegistry" />
+            <argument type="service" id="Dustin\ImpEx\Sequence\Registry\TransferorRegistry" />
+        </service>
+
+        <!-- ShopGrouper -->
+        <service id="SgateShipFromStore\Framework\Sequence\ShopGrouper">
+            <tag name="impex.handling" sequence="order" priority="900" />
         </service>
 
     </services>

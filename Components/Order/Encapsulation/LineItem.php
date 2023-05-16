@@ -41,4 +41,6 @@ class LineItem extends PropertyEncapsulation
      * @var Product
      */
     protected $product;
+
+    protected int $type = 0;
 }

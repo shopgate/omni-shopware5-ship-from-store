@@ -1,6 +1,6 @@
 <?php
 
-namespace SgateShipFromStore\Components\Order\Address;
+namespace SgateShipFromStore\Components\Order\Encapsulation;
 
 use Dustin\Encapsulation\PropertyEncapsulation;
 

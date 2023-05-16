@@ -31,17 +31,25 @@ class OrderReader extends Reader
             FROM `s_order` `order` 
             LEFT JOIN `s_order_attributes` `order_attribute` ON `order`.`id` = `order_attribute`.`orderID`
             WHERE `order_attribute`.`sgate_ship_from_store_exported` = 0
-                OR `order_attribute`.`sgate_ship_from_store_exported` IS NULL';
+                OR `order_attribute`.`sgate_ship_from_store_exported` IS NULL
+            ORDER BY `order`.`language`, `order`.`ordertime`';
 
         yield from $this->connection->executeQuery($sql)->fetchAll(\PDO::FETCH_COLUMN);
     }
 
     protected function read($id): array
     {
-        $id = (int) $id;
+        $data = $this->fetchOrder($id);
+        $data['lineItems'] = $this->fetchLineItems($id);
 
+        return $data;
+    }
+
+    protected function fetchOrder(int $id): array
+    {
         $data = $this->connection->createQueryBuilder()
             ->select([
+                '`order`.`id` as `id`',
                 '`order`.`ordernumber` as `externalCode`',
                 '`customer`.`customernumber` as `externalCustomerNumber`',
                 'REPLACE(LOWER(`locale`.`locale`), "_", "-") as `localeCode`',
@@ -83,9 +91,18 @@ class OrderReader extends Reader
 
                 '`order`.`invoice_shipping` as `shippingTotal`',
                 '`order`.`invoice_amount` as `total`',
-                '`order`.`ordertime` as `submitDate`',
+                'CONCAT(DATE(`order`.`ordertime`), "T", TIME(`order`.`ordertime`), ".000Z") as `submitDate`',
 
                 'IFNULL(`shop`.`host`, `main_shop`.`host`) as `domain`',
+                '`shop`.`id` as `shopId`',
+                '`order`.`invoice_amount` - `order`.`invoice_amount_net` as `taxAmount`',
+
+                '`customer`.`customernumber` as `customer.externalCustomerNumber`',
+                '`customer`.`email` as `customer.emailAddress`',
+                '`customer`.`firstname` as `customer.firstName`',
+                '`customer`.`lastname` as `customer.lastName`',
+                '`customer_attribute`.`sgate_ship_from_store_customer_number` as `customer.internalCustomerNumber`',
+                '`customer`.`id` as `customer.shopwareId`',
             ])
             ->from('`s_order`', '`order`')
             ->leftJoin('`order`', '`s_user`', '`customer`', '`order`.`userID` = `customer`.`id`')
@@ -98,13 +115,14 @@ class OrderReader extends Reader
             ->leftJoin('`order`', '`s_order_shippingaddress`', '`shipping_address`', '`order`.`id` = `shipping_address`.`orderID`')
             ->leftJoin('`shipping_address`', '`s_core_countries_states`', '`shipping_address_state`', '`shipping_address`.`stateID` = `shipping_address_state`.`id`')
             ->leftJoin('`shipping_address`', '`s_core_countries`', '`shipping_address_country`', '`shipping_address`.`countryID` = `shipping_address_country`.`id`')
+            ->leftJoin('`customer`', '`s_user_attributes`', '`customer_attribute`', '`customer`.`id` = `customer_attribute`.`userID`')
             ->where('`order`.`id` = :id')
             ->setParameter('id', $id)
             ->execute()->fetch();
 
-        $data = ArrayUtil::flatToNested($data);
+        $data['shopCode'] = $this->config->get($data['shopId'])->get('shopCode');
 
-        $data['lineItems'] = $this->fetchLineItems($id);
+        $data = ArrayUtil::flatToNested($data);
 
         return $data;
     }
@@ -150,6 +168,8 @@ class OrderReader extends Reader
                     ),
                     (`line_item`.`price` / (1+(`line_item`.`tax_rate` / 100))) * (`line_item`.`tax_rate` / 100)
                 ) as `taxAmount`',
+                '`line_item`.`modus` as `type`',
+                '`order`.`currency` as `currencyCode`',
             ])
             ->from('`s_order_details`', '`line_item`')
             ->leftJoin('`line_item`', '`s_articles_prices`', '`article_price`', '`line_item`.`articleDetailID` = `article_price`.`articledetailsID`')
@@ -160,8 +180,8 @@ class OrderReader extends Reader
             ->leftJoin('`order`', '`s_core_shops`', '`shop`', '`order`.`language` = `shop`.`id`')
             ->leftJoin('`shop`', '`s_core_customergroups`', '`shop_customer_group`', '`shop`.`customer_group_id` = `shop_customer_group`.`id`')
             ->where('`line_item`.`orderID` = :orderId')
-            ->andWhere('`article_price`.`pricegroup` = `shop_customer_group`.`groupkey`')
-            ->andWhere('`article_price`.`from` = 1')
+            ->andWhere('`article_price`.`pricegroup` = `shop_customer_group`.`groupkey` OR `line_item`.`modus` <> 0')
+            ->andWhere('`article_price`.`from` = 1 OR `line_item`.`modus` <> 0')
             ->setParameter('orderId', $orderId)
             ->execute()->fetchAll();
 
@@ -169,7 +189,7 @@ class OrderReader extends Reader
             $lineItem = ArrayUtil::flatToNested($lineItem);
 
             $config = $this->config->get($lineItem['shopId']);
-            $lineItem['product']['code'] = $lineItem['product']['identifiers'][$config->get('articleKey')];
+            $lineItem['product']['code'] = $lineItem['product']['identifiers'][$config->get('productCode')];
             unset($lineItem['shopId']);
         }
 

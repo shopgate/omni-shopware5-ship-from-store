@@ -4,8 +4,9 @@ namespace SgateShipFromStore\Framework\Sequence\Task;
 
 use Dustin\ImpEx\Sequence\RecordHandling;
 use Dustin\ImpEx\Sequence\Transferor;
+use SgateShipFromStore\Framework\Task\TaskInterface;
 
-class RecordHandlingTask
+class RecordHandlingTask implements TaskInterface
 {
     /**
      * @var Transferor
@@ -25,7 +26,7 @@ class RecordHandlingTask
         $this->handler = $handler;
     }
 
-    public function execute(): void
+    public function execute()
     {
         $this->handler->handle($this->transferor);
     }

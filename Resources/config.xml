@@ -11,15 +11,15 @@
             <label lang="en">&#60;b&#62;General settings&#60;/b&#62;</label>
         </element>
 
-        <!-- articleKey -->
+        <!-- productCode -->
         <element type="select">
-            <name>articleKey</name>
-            <label lang="de">Artikel-Schlüssel</label>
-            <label lang="en">Article key</label>
-            <value>ordernumber</value>
+            <name>productCode</name>
+            <label lang="de">Produkt Code</label>
+            <label lang="en">Product code</label>
+            <value>sku</value>
             <store>
                 <option>
-                    <value>sku</value>
+                    <value>ordernumber</value>
                     <label lang="de">Artikelnummer</label>
                     <label lang="en">article number</label>
                 </option>
@@ -56,12 +56,12 @@
             <value></value>
             <store>
                 <option>
-                    <value>dev</value>
-                    <label lang="de">Development</label>
-                    <label lang="en">Development</label>
+                    <value>staging</value>
+                    <label lang="de">Staging</label>
+                    <label lang="en">Staging</label>
                 </option>
                 <option>
-                    <value></value>
+                    <value>production</value>
                     <label lang="de">Production</label>
                     <label lang="en">Production</label>
                 </option>

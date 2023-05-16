@@ -63,11 +63,11 @@ class ConfigService
         $config = $this->reader->getByPluginName($this->pluginName, $shopId);
         $config = new Encapsulation($config);
 
-        $scopableKeys = ['username', 'password', 'clientId', 'clientSecret'];
+        $scopableKeys = ['username', 'password', 'clientId', 'clientSecret', 'shopCode', 'merchantCode'];
         $apiData = [];
 
         foreach ($scopableKeys as $key) {
-            $scopedKey = $key.$config->get('env') === 'dev' ? 'Dev' : 'Prod';
+            $scopedKey = $key.($config->get('env') === 'staging' ? 'Dev' : 'Prod');
 
             $apiData[$key] = $config->get($scopedKey);
             $config->unset($key.'Dev');
