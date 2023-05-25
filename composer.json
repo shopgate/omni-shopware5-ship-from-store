@@ -1,0 +1,11 @@
+{
+    "require": {
+        "shopgate/connect-integration-sdk-php": "^2.1",
+        "psr/container": "^1",
+        "dustin/encapsulation": "~1.2.1",
+        "dustin/impex": "~0.4",
+        "symfony/http-foundation": "~4.4.0",
+        "symfony/dependency-injection": "4.4.0",
+        "symfony/yaml": "~5.4"
+    }
+}

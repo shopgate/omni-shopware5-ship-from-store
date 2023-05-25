@@ -1,0 +1,44 @@
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        
+        <!-- OrderNormalizer -->
+        <service id="SgateShipFromStore\Components\Order\Serializer\OrderNormalizer">
+            <argument type="string">%sgate_ship_from_store.plugin_dir%/Resources/metadata.yaml</argument>
+        </service>
+
+        <!-- OrderReader -->        
+        <service id="SgateShipFromStore\Components\Order\OrderReader">
+            <argument type="service" id="dbal_connection" />
+            <argument type="service" id="SgateShipFromStore\Components\Order\Serializer\OrderNormalizer" />
+            <argument type="service" id="sgate_ship_from_store.config.per_shop" />
+        </service>
+
+        <!-- OrderTransferor -->
+        <service id="sgate_ship_from_store.transferor.order" class="SgateShipFromStore\Framework\Sequence\ReaderTransferor">
+            <argument type="service" id="SgateShipFromStore\Components\Order\OrderReader" />
+
+            <tag name="impex.handling.transferor" sequence="sgate_order_export" />
+        </service>
+
+        <!-- OrderExporter -->
+        <service id="SgateShipFromStore\Components\Order\OrderExporter">
+            <argument type="service" id="SgateShipFromStore\Components\Order\Serializer\OrderNormalizer" />
+            <argument type="service" id="SgateShipFromStore\Components\ShopgateSdkRegistry" />
+            <argument type="service" id="SgateShipFromStore\Framework\Logger" />
+            <argument type="service" id="models" />
+            <argument type="service" id="SgateShipFromStore\Framework\ExceptionHandler" />
+
+            <tag name="impex.handling" sequence="sgate_order_export" priority="100" />
+        </service>
+
+        <!-- OrderExportSubscriber -->
+        <service id="SgateShipFromStore\Components\Order\Subscriber\OrderExportSubscriber">
+            <argument type="service" id="SgateShipFromStore\Framework\Sequence\Task\RecordHandlingTaskFactory" />
+            
+            <tag name="shopware.event_subscriber" />
+        </service>
+
+    </services>
+</container>
