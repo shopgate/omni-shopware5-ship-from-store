@@ -11,12 +11,12 @@
             <label lang="en">&#60;b&#62;General settings&#60;/b&#62;</label>
         </element>
 
-        <!-- articleKey -->
+        <!-- productCode -->
         <element type="select">
-            <name>articleKey</name>
-            <label lang="de">Artikel-Schlüssel</label>
-            <label lang="en">Article key</label>
-            <value>ordernumber</value>
+            <name>productCode</name>
+            <label lang="de">Produkt Code</label>
+            <label lang="en">Product code</label>
+            <value>sku</value>
             <store>
                 <option>
                     <value>ordernumber</value>
@@ -48,11 +48,24 @@
             <description lang="en">Provide one or more mail addresses (separated by comma) to send error reports to.</description>
         </element>
 
-        <!-- useStaging -->
-        <element type="boolean" scope="shop">
-            <name>useStaging</name>
-            <label lang="de">Staging-API benutzen</label>
-            <label lang="en">Use staging API</label>
+        <!-- env -->
+        <element type="select">
+            <name>env</name>
+            <label lang="de">Umgebung</label>
+            <label lang="en">Environment</label>
+            <value></value>
+            <store>
+                <option>
+                    <value>staging</value>
+                    <label lang="de">Staging</label>
+                    <label lang="en">Staging</label>
+                </option>
+                <option>
+                    <value>production</value>
+                    <label lang="de">Production</label>
+                    <label lang="en">Production</label>
+                </option>
+            </store>
         </element>
 
         <!-- Production API -->
@@ -62,67 +75,95 @@
             <label lang="en">&#60;b&#62;Production API&#60;/b&#62;</label>
         </element>
 
-        <!-- merchantCodeProduction -->
+        <!-- merchantCodeProd -->
         <element type="text" scope="shop">
-            <name>merchantCodeProduction</name>
+            <name>merchantCodeProd</name>
             <label lang="de">Merchant Code</label>
             <label lang="en">Merchant Code</label>
         </element>
 
-        <!-- shopCodeProduction -->
+        <!-- shopCodeProd -->
         <element type="text" scope="shop">
-            <name>shopCodeProduction</name>
+            <name>shopCodeProd</name>
             <label lang="de">Shop Code</label>
             <label lang="en">Shop Code</label>
         </element>
 
-        <!-- apiUserProduction -->
+        <!-- usernameProd -->
         <element type="text" scope="shop">
-            <name>apiUserProduction</name>
+            <name>usernameProd</name>
             <label lang="de">Nutzer</label>
             <label lang="en">User</label>
         </element>
 
-        <!-- apiPasswordProduction -->
+        <!-- passwordProd -->
         <element type="password" scope="shop">
-            <name>apiPasswordProduction</name>
+            <name>passwordProd</name>
             <label lang="de">Passwort</label>
             <label lang="en">Password</label>
         </element>
 
-        <!-- Staging API -->
+        <!-- clientIdProd -->
+        <element type="text" scope="shop">
+            <name>clientIdProd</name>
+            <label lang="de">Client ID</label>
+            <label lang="en">Client ID</label>
+        </element>
+
+        <!-- clientSecretProd -->
+        <element type="password" scope="shop">
+            <name>clientSecretProd</name>
+            <label lang="de">Client Secret</label>
+            <label lang="en">Client Secret</label>
+        </element>
+
+        <!-- Dev API -->
         <element type="button">
-            <name>buttonStagingApi</name>
-            <label lang="de">&#60;b&#62;Staging API&#60;/b&#62;</label>
-            <label lang="en">&#60;b&#62;Staging API&#60;/b&#62;</label>
+            <name>buttonDevApi</name>
+            <label lang="de">&#60;b&#62;Development API&#60;/b&#62;</label>
+            <label lang="en">&#60;b&#62;Development API&#60;/b&#62;</label>
         </element>
 
-        <!-- merchantCodeStaging -->
+        <!-- merchantCodeDev -->
         <element type="text" scope="shop">
-            <name>merchantCodeStaging</name>
+            <name>merchantCodeDev</name>
             <label lang="de">Merchant Code</label>
             <label lang="en">Merchant Code</label>
         </element>
 
-        <!-- shopCodeStaging -->
+        <!-- shopCodeDev -->
         <element type="text" scope="shop">
-            <name>shopCodeStaging</name>
+            <name>shopCodeDev</name>
             <label lang="de">Shop Code</label>
             <label lang="en">Shop Code</label>
         </element>
 
-        <!-- apiUserStaging -->
+        <!-- usernameDev -->
         <element type="text" scope="shop">
-            <name>apiUserStaging</name>
+            <name>usernameDev</name>
             <label lang="de">Nutzer</label>
             <label lang="en">User</label>
         </element>
 
-        <!-- apiPasswordStaging -->
+        <!-- passwordDev -->
         <element type="password" scope="shop">
-            <name>apiPasswordStaging</name>
+            <name>passwordDev</name>
             <label lang="de">Passwort</label>
             <label lang="en">Password</label>
+        </element>
+
+        <!-- clientIdDev -->
+        <element type="text" scope="shop">
+            <name>clientIdDev</name>
+            <label lang="de">Client ID</label>
+            <label lang="en">Client ID</label>
+        </element>
+
+        <!-- clientSecretDev -->
+        <element type="password" scope="shop">
+            <name>clientSecretDev</name>
+            <label lang="de">Client Secret</label>
+            <label lang="en">Client Secret</label>
         </element>
 
         <!-- Status -->

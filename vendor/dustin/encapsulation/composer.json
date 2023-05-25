@@ -1,7 +1,7 @@
 {
     "name": "dustin/encapsulation",
     "type": "library",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "description": "A simple way to accommodate, exchange and structorize data with objects",
     "keywords": [
         "object",
