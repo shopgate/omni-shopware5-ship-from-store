@@ -7,8 +7,9 @@
         <service id="SgateShipFromStore\Components\Customer\CustomerUpserter">
             <argument type="service" id="SgateShipFromStore\Components\ShopgateSdkRegistry" />
             <argument type="service" id="models" />
+            <argument type="service" id="SgateShipFromStore\Framework\ExceptionHandler" />
 
-            <tag name="impex.handling" sequence="order" priority="500" />
+            <tag name="impex.handling" sequence="sgate_order_export" priority="500" />
         </service>
 
     </services>

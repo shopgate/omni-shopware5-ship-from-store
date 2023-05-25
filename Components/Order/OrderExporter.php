@@ -103,8 +103,8 @@ class OrderExporter extends InlineRecordHandling implements RecordHandling
         $attribute = $orderEntity->getAttribute() ?? new OrderAttribute();
 
         $attribute->setOrderId($id);
-        $attribute->setSgateOrderNumber($orderNumber);
-        $attribute->setSgateExported(true);
+        $attribute->setSgateShipFromStoreOrderNumber($orderNumber);
+        $attribute->setSgateShipFromStoreExported(true);
 
         $this->modelManager->persist($attribute);
         $this->modelManager->flush();

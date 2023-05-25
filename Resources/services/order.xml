@@ -19,7 +19,7 @@
         <service id="sgate_ship_from_store.transferor.order" class="SgateShipFromStore\Framework\Sequence\ReaderTransferor">
             <argument type="service" id="SgateShipFromStore\Components\Order\OrderReader" />
 
-            <tag name="impex.handling.transferor" sequence="order" />
+            <tag name="impex.handling.transferor" sequence="sgate_order_export" />
         </service>
 
         <!-- OrderExporter -->
@@ -30,7 +30,7 @@
             <argument type="service" id="models" />
             <argument type="service" id="SgateShipFromStore\Framework\ExceptionHandler" />
 
-            <tag name="impex.handling" sequence="order" priority="100" />
+            <tag name="impex.handling" sequence="sgate_order_export" priority="100" />
         </service>
 
     </services>
