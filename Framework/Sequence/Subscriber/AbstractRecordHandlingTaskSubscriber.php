@@ -1,6 +1,6 @@
 <?php
 
-namespace SgateShipFromStore\Framework\Sequence;
+namespace SgateShipFromStore\Framework\Sequence\Subscriber;
 
 use Enlight\Event\SubscriberInterface;
 use SgateShipFromStore\Framework\Sequence\Task\RecordHandlingTaskFactory;

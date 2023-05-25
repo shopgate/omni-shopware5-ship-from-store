@@ -33,5 +33,12 @@
             <tag name="impex.handling" sequence="sgate_order_export" priority="100" />
         </service>
 
+        <!-- OrderExportSubscriber -->
+        <service id="SgateShipFromStore\Components\Order\Subscriber\OrderExportSubscriber">
+            <argument type="service" id="SgateShipFromStore\Framework\Sequence\Task\RecordHandlingTaskFactory" />
+            
+            <tag name="shopware.event_subscriber" />
+        </service>
+
     </services>
 </container>
