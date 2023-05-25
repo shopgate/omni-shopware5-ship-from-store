@@ -16,7 +16,7 @@
             <name>productCode</name>
             <label lang="de">Produkt Code</label>
             <label lang="en">Product code</label>
-            <value>sku</value>
+            <value>ordernumber</value>
             <store>
                 <option>
                     <value>ordernumber</value>
