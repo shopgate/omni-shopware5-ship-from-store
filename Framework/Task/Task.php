@@ -2,6 +2,8 @@
 
 namespace SgateShipFromStore\Framework\Task;
 
+use SgateShipFromStore\Framework\Exception\CancelRetryException;
+
 abstract class Task implements TaskInterface
 {
     abstract public function execute();
@@ -18,6 +20,8 @@ abstract class Task implements TaskInterface
         while ($count < $retries) {
             try {
                 return $this->execute();
+            } catch (CancelRetryException $exception) {
+                throw $exception->getException();
             } catch (\Throwable $th) {
                 ++$count;
                 $exception = $th;
