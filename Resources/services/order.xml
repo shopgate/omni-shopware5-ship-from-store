@@ -22,8 +22,9 @@
             <tag name="impex.handling.transferor" sequence="sgate_order_export" />
         </service>
 
-        <!-- OrderExporter -->
-        <service id="SgateShipFromStore\Components\Order\OrderExporter">
+        <!-- OrderSyncer -->
+        <service id="SgateShipFromStore\Components\Order\OrderSyncer">
+            <argument type="service" id="SgateShipFromStore\Components\Order\Serializer\OrderNormalizer" />
             <argument type="service" id="SgateShipFromStore\Components\Order\Serializer\OrderNormalizer" />
             <argument type="service" id="SgateShipFromStore\Components\ShopgateSdkRegistry" />
             <argument type="service" id="SgateShipFromStore\Framework\Logger" />
