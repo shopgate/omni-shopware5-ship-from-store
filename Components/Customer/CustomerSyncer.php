@@ -13,7 +13,7 @@ use Shopware\Components\Model\ModelManager;
 use Shopware\Models\Attribute\Customer as CustomerAttribute;
 use Shopware\Models\Customer\Customer as CustomerEntity;
 
-class CustomerUpserter extends InlineRecordHandling implements RecordHandling
+class CustomerSyncer extends InlineRecordHandling implements RecordHandling
 {
     /**
      * @var ShopgateSdkRegistry
@@ -43,7 +43,7 @@ class CustomerUpserter extends InlineRecordHandling implements RecordHandling
         $this->customerRepository = $modelManager->getRepository(CustomerEntity::class);
     }
 
-    public function upsertCustomers(CustomerContainer $customers, int $shopId): void
+    public function syncCustomers(CustomerContainer $customers, int $shopId): void
     {
         if (count($customers) === 0) {
             return;
@@ -119,7 +119,7 @@ class CustomerUpserter extends InlineRecordHandling implements RecordHandling
         }
     }
 
-    public function saveCustomers(Container $customers): void
+    public function saveCustomers(CustomerContainer $customers): void
     {
         foreach ($customers as $customer) {
             $id = $customer->get('shopwareId');
@@ -145,7 +145,7 @@ class CustomerUpserter extends InlineRecordHandling implements RecordHandling
 
     protected function execute(Container $container, int $shopId): void
     {
-        $this->upsertCustomers($container, $shopId);
+        $this->syncCustomers($container, $shopId);
     }
 
     protected function buildCustomer(array $data): Customer
