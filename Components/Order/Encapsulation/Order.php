@@ -119,6 +119,11 @@ class Order extends Record implements ShopIdInterface, CustomerExtractionInterfa
      */
     protected $submitDate;
 
+    /**
+     * @var string
+     */
+    protected $orderNumber;
+
     public function getShopId(): int
     {
         return $this->shopId;

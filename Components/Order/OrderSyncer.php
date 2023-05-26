@@ -16,14 +16,21 @@ use SgateShipFromStore\Framework\Sequence\InlineRecordHandling;
 use Shopware\Components\Model\ModelManager;
 use Shopware\Models\Attribute\Order as OrderAttribute;
 use Shopware\Models\Order\Order as OrderEntity;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-class OrderExporter extends InlineRecordHandling implements RecordHandling
+class OrderSyncer extends InlineRecordHandling implements RecordHandling
 {
     /**
      * @var NormalizerInterface
      */
     private $orderNormalizer;
+
+    /**
+     * @var DenormalizerInterface
+     */
+    private $orderDenormalizer;
 
     /**
      * @var ShopgateSdkRegistry
@@ -49,12 +56,14 @@ class OrderExporter extends InlineRecordHandling implements RecordHandling
 
     public function __construct(
         NormalizerInterface $orderNormalizer,
+        DenormalizerInterface $orderDenormalizer,
         ShopgateSdkRegistry $shopgateSdkRegistry,
         LoggerInterface $logger,
         ModelManager $modelManager,
         ExceptionHandler $exceptionHandler
     ) {
         $this->orderNormalizer = $orderNormalizer;
+        $this->orderDenormalizer = $orderDenormalizer;
         $this->shopgateSdkRegistry = $shopgateSdkRegistry;
         $this->logger = $logger;
         $this->modelManager = $modelManager;
@@ -62,18 +71,24 @@ class OrderExporter extends InlineRecordHandling implements RecordHandling
         $this->orderRepository = $modelManager->getRepository(OrderEntity::class);
     }
 
-    public function createShopgateOrders(OrderContainer $orders, int $shopId): void
+    public function syncOrders(OrderContainer $orders, int $shopId): void
     {
-        $this->prepareOrders($orders);
+        $this->resolveOrders($orders, $shopId);
 
-        $data = (new Container($orders->toArray()))->map(function (Order $order) {
+        $newOrders = $orders->filter(function (Order $order) {
+            return $order->get('orderNumber') === null;
+        });
+
+        $this->prepareOrders($newOrders);
+
+        $data = (new Container($newOrders->toArray()))->map(function (Order $order) {
             return $this->orderNormalizer->normalize($order, null, [OrderNormalizer::GROUPS => ['normalization']]);
         })->toArray();
 
         $orderService = $this->shopgateSdkRegistry->getShopgateSdk($shopId)->getOrderService();
         $task = new CreateShopgateOrdersTask($data, $orderService, $this->logger);
 
-        $validIndizes = array_values(array_keys($orders->toArray()));
+        $validIndizes = array_values(array_keys($newOrders->toArray()));
         $orderNumbers = [];
 
         try {
@@ -83,8 +98,10 @@ class OrderExporter extends InlineRecordHandling implements RecordHandling
             $this->exceptionHandler->handle($exception, $shopId);
 
             foreach ($exception->getErrors() as $error) {
-                $index = $error->get('entityIndex');
-                unset($validIndizes[$index]);
+                if ($error->has('entityIndex')) {
+                    $index = $error->get('entityIndex');
+                    unset($validIndizes[$index]);
+                }
             }
         } catch (\Throwable $th) {
             $this->exceptionHandler->handle($th, $shopId);
@@ -92,21 +109,53 @@ class OrderExporter extends InlineRecordHandling implements RecordHandling
         }
 
         foreach ($validIndizes as $index) {
-            $this->updateOrder($orders->getAt($index), $orderNumbers[$index]);
+            $newOrders->getAt($index)->set('orderNumber', $orderNumbers[$index]);
+        }
+
+        $validOrders = $orders->filter(function (Order $order) {
+            return $order->get('orderNumber') !== null;
+        });
+
+        $this->updateOrders($validOrders);
+    }
+
+    public function resolveOrders(OrderContainer $orders, int $shopId): void
+    {
+        /** @var Order $order */
+        foreach ($orders as $order) {
+            $orderFound = $this->searchShopgateOrder($order->get('externalCode'), $shopId);
+            $order->set('orderNumber', $orderFound ? $orderFound->get('orderNumber') : null);
         }
     }
 
-    public function updateOrder(Order $order, string $orderNumber): void
+    public function searchShopgateOrder(string $externalCode, int $shopId): ?Order
     {
-        $id = $order->get('id');
-        $orderEntity = $this->orderRepository->findOneBy(['id' => $id]);
-        $attribute = $orderEntity->getAttribute() ?? new OrderAttribute();
+        $orderService = $this->shopgateSdkRegistry->getShopgateSdk($shopId)->getOrderService();
+        $result = $orderService->getOrders(['filters' => ['externalCode' => $externalCode], 'limit' => 1]);
 
-        $attribute->setOrderId($id);
-        $attribute->setSgateShipFromStoreOrderNumber($orderNumber);
-        $attribute->setSgateShipFromStoreExported(true);
+        $data = $result['orders'][0] ?? null;
 
-        $this->modelManager->persist($attribute);
+        if ($data === null) {
+            return null;
+        }
+
+        return $this->buildOrder($data);
+    }
+
+    public function updateOrders(OrderContainer $orders): void
+    {
+        foreach ($orders as $order) {
+            $id = $order->get('id');
+            $orderEntity = $this->orderRepository->findOneBy(['id' => $id]);
+            $attribute = $orderEntity->getAttribute() ?? new OrderAttribute();
+
+            $attribute->setOrderId($id);
+            $attribute->setSgateShipFromStoreOrderNumber($order->get('orderNumber'));
+            $attribute->setSgateShipFromStoreExported(true);
+
+            $this->modelManager->persist($attribute);
+        }
+
         $this->modelManager->flush();
     }
 
@@ -122,7 +171,7 @@ class OrderExporter extends InlineRecordHandling implements RecordHandling
 
     protected function execute(Container $container, int $shopId): void
     {
-        $this->createShopgateOrders($container, $shopId);
+        $this->syncOrders($container, $shopId);
     }
 
     protected function buildContainer(Container $container): Container
@@ -132,5 +181,10 @@ class OrderExporter extends InlineRecordHandling implements RecordHandling
                 return $source->getOrder();
             })->toArray()
         );
+    }
+
+    protected function buildOrder(array $data): Order
+    {
+        return $this->orderDenormalizer->denormalize($data, Order::class, null, [AbstractNormalizer::GROUPS => ['denormalization']]);
     }
 }
