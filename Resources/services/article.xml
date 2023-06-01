@@ -41,5 +41,12 @@
             <tag name="impex.handling" sequence="sgate_inventory_import" priority="100" />
         </service>
 
+        <!-- StockImportSubscriber -->
+        <service id="SgateShipFromStore\Components\Article\Subscriber\StockImportSubscriber">
+            <argument type="service" id="SgateShipFromStore\Framework\Sequence\Task\RecordHandlingTaskFactory" />
+            
+            <tag name="shopware.event_subscriber" />
+        </service>
+
     </services>
 </container>

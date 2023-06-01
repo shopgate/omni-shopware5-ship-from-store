@@ -10,4 +10,12 @@
         <disableOnError>false</disableOnError>
     </cronjob>
 
+    <cronjob>
+        <name>Shopgate Bestandsimport</name>
+        <action>Shopware_CronJob_SgateStockImport</action>
+        <active>1</active>
+        <interval>900</interval>
+        <disableOnError>false</disableOnError>
+    </cronjob>
+
 </cronjobs>
