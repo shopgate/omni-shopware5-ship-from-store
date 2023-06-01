@@ -22,6 +22,18 @@ use SgateShipFromStore\Framework\Serializer\EncapsulationNormalizer;
 
 class OrderNormalizer extends EncapsulationNormalizer
 {
+    /**
+     * @var DateTimeConverter
+     */
+    private $dateTimeConverter;
+
+    public function __construct(string $metaFile, DateTimeConverter $dateTimeConverter)
+    {
+        $this->dateTimeConverter = $dateTimeConverter;
+
+        parent::__construct($metaFile);
+    }
+
     public function getEncapsulationClass(): ?string
     {
         return Order::class;
@@ -41,7 +53,7 @@ class OrderNormalizer extends EncapsulationNormalizer
                 'taxAmount' => new FloatConverter(),
                 'total' => new FloatConverter(),
                 'taxExempt' => new BoolConverter(),
-                'submitDate' => new DateTimeConverter('Y-m-d\TH:i:s.000\Z'),
+                'submitDate' => $this->dateTimeConverter,
                 'addressSequences' => new ListConverter(
                     new NormalizerConverter(
                         $addressNormalizer,

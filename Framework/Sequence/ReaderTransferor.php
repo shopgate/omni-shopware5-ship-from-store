@@ -3,6 +3,7 @@
 namespace SgateShipFromStore\Framework\Sequence;
 
 use Dustin\ImpEx\Sequence\Transferor;
+use SgateShipFromStore\Framework\Exception\RecordNotFoundException;
 use SgateShipFromStore\Framework\Reader\ReaderInterface;
 
 class ReaderTransferor implements Transferor
@@ -29,6 +30,14 @@ class ReaderTransferor implements Transferor
     {
         $identifiers = $this->identifiers ?? $this->reader->getNextUpIdentifiers();
 
-        yield from $this->reader->get($identifiers);
+        foreach ($identifiers as $identifier) {
+            try {
+                foreach ($this->reader->get([$identifier]) as $record) {
+                    yield $record;
+                }
+            } catch (RecordNotFoundException $e) {
+                // Ignore not found records
+            }
+        }
     }
 }

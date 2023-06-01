@@ -2,8 +2,8 @@
 
 namespace SgateShipFromStore\Components\Customer;
 
+use Doctrine\ORM\EntityRepository;
 use Dustin\Encapsulation\Container;
-use Dustin\ImpEx\Sequence\RecordHandling;
 use SgateShipFromStore\Components\Customer\Encapsulation\Customer;
 use SgateShipFromStore\Components\Customer\Encapsulation\CustomerContainer;
 use SgateShipFromStore\Components\ShopgateSdkRegistry;
@@ -13,7 +13,7 @@ use Shopware\Components\Model\ModelManager;
 use Shopware\Models\Attribute\Customer as CustomerAttribute;
 use Shopware\Models\Customer\Customer as CustomerEntity;
 
-class CustomerSyncer extends InlineRecordHandling implements RecordHandling
+class CustomerSyncer extends InlineRecordHandling
 {
     /**
      * @var ShopgateSdkRegistry
@@ -30,6 +30,9 @@ class CustomerSyncer extends InlineRecordHandling implements RecordHandling
      */
     private $exceptionHandler;
 
+    /**
+     * @var EntityRepository
+     */
     private $customerRepository;
 
     public function __construct(
