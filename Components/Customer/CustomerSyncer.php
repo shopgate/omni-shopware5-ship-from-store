@@ -4,6 +4,7 @@ namespace SgateShipFromStore\Components\Customer;
 
 use Doctrine\ORM\EntityRepository;
 use Dustin\Encapsulation\Container;
+use Dustin\Encapsulation\Encapsulation;
 use SgateShipFromStore\Components\Customer\Encapsulation\Customer;
 use SgateShipFromStore\Components\Customer\Encapsulation\CustomerContainer;
 use SgateShipFromStore\Components\ShopgateSdkRegistry;
@@ -52,9 +53,11 @@ class CustomerSyncer extends InlineRecordHandling
             return;
         }
 
+        $uniqueCustomers = $customers->unique(SORT_REGULAR);
+
         $this->resolveShopgateIds($customers, $shopId);
 
-        $notFoundCustomers = $customers->filter(function (Customer $customer) {
+        $notFoundCustomers = $uniqueCustomers->filter(function (Customer $customer) {
             return $customer->get('id') === null;
         });
 
@@ -62,7 +65,8 @@ class CustomerSyncer extends InlineRecordHandling
             $this->createShopgateCustomers($notFoundCustomers, $shopId);
         }
 
-        $this->saveCustomers($customers);
+        $this->applyData($uniqueCustomers, $customers);
+        $this->saveCustomers($uniqueCustomers);
     }
 
     public function resolveShopgateIds(CustomerContainer $customers, int $shopId): void
@@ -159,5 +163,22 @@ class CustomerSyncer extends InlineRecordHandling
         $customer->setList($data);
 
         return $customer;
+    }
+
+    private function applyData(CustomerContainer $uniqueCustomers, CustomerContainer $customers): void
+    {
+        $keys = array_map(function (Customer $customer) { return $customer->getShopgateKey(); }, $uniqueCustomers->toArray());
+        $map = new Encapsulation(
+            array_combine(
+                $keys,
+                $uniqueCustomers->toArray()
+            )
+        );
+
+        /** @var Customer $customer */
+        foreach ($customers as $customer) {
+            $c = $map->get($customer->getShopgateKey());
+            $customer->set('id', $c->get('id'));
+        }
     }
 }

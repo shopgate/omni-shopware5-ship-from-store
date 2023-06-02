@@ -76,39 +76,41 @@ class OrderSyncer extends InlineRecordHandling
 
         $newOrders = $orders->filter(function (Order $order) {
             return $order->get('orderNumber') === null;
-        });
+        })->unique(SORT_REGULAR);
 
-        $this->prepareOrders($newOrders);
+        if (count($newOrders) > 0) {
+            $this->prepareOrders($newOrders);
 
-        $data = (new Container($newOrders->toArray()))->map(function (Order $order) {
-            return $this->orderNormalizer->normalize($order, null, [OrderNormalizer::GROUPS => ['normalization']]);
-        })->toArray();
+            $data = (new Container($newOrders->toArray()))->map(function (Order $order) {
+                return $this->orderNormalizer->normalize($order, null, [OrderNormalizer::GROUPS => ['normalization']]);
+            })->toArray();
 
-        $orderService = $this->shopgateSdkRegistry->getShopgateSdk($shopId)->getOrderService();
-        $task = new CreateShopgateOrdersTask($data, $orderService, $this->logger);
+            $orderService = $this->shopgateSdkRegistry->getShopgateSdk($shopId)->getOrderService();
+            $task = new CreateShopgateOrdersTask($data, $orderService, $this->logger);
 
-        $validIndizes = array_values(array_keys($newOrders->toArray()));
-        $orderNumbers = [];
+            $validIndizes = array_values(array_keys($newOrders->toArray()));
+            $orderNumbers = [];
 
-        try {
-            $result = (array) $task->retry();
-            $orderNumbers = $result['orderNumbers'] ?? [];
-        } catch (ApiErrorException $exception) {
-            $this->exceptionHandler->handle($exception, $shopId);
+            try {
+                $result = (array) $task->retry();
+                $orderNumbers = $result['orderNumbers'] ?? [];
+            } catch (ApiErrorException $exception) {
+                $this->exceptionHandler->handle($exception, $shopId);
 
-            foreach ($exception->getErrors() as $error) {
-                if ($error->has('entityIndex')) {
-                    $index = $error->get('entityIndex');
-                    unset($validIndizes[$index]);
+                foreach ($exception->getErrors() as $error) {
+                    if ($error->has('entityIndex')) {
+                        $index = $error->get('entityIndex');
+                        unset($validIndizes[$index]);
+                    }
                 }
+            } catch (\Throwable $th) {
+                $this->exceptionHandler->handle($th, $shopId);
+                $validIndizes = [];
             }
-        } catch (\Throwable $th) {
-            $this->exceptionHandler->handle($th, $shopId);
-            $validIndizes = [];
-        }
 
-        foreach ($validIndizes as $index) {
-            $newOrders->getAt($index)->set('orderNumber', $orderNumbers[$index]);
+            foreach ($validIndizes as $index) {
+                $newOrders->getAt($index)->set('orderNumber', $orderNumbers[$index]);
+            }
         }
 
         $validOrders = $orders->filter(function (Order $order) {
