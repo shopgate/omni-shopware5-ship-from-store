@@ -1,0 +1,52 @@
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        
+        <!-- InventoryNormalizer -->
+        <service id="SgateShipFromStore\Components\Article\Serializer\InventoryNormalizer">
+            <argument type="string">%sgate_ship_from_store.meta_file%</argument>
+        </service>
+
+        <!-- InventoryReader -->        
+        <service id="SgateShipFromStore\Components\Article\InventoryReader">
+            <argument type="service" id="SgateShipFromStore\Components\Article\Serializer\InventoryNormalizer" />
+            <argument type="service" id="SgateShipFromStore\Components\ShopgateSdkRegistry" />
+            <argument type="service" id="sgate_ship_from_store.config.per_shop" />
+            <argument type="service" id="SgateShipFromStore\Components\Shop\ShopIterator" />
+            <argument type="service" id="sgate_ship_from_store.date_time_converter" />
+            <argument type="service" id="SgateShipFromStore\Framework\ExceptionHandler" />
+        </service>
+
+        <!-- InventoryTransferor -->
+        <service id="sgate_ship_from_store.transferor.inventory" class="SgateShipFromStore\Framework\Sequence\ReaderTransferor">
+            <argument type="service" id="SgateShipFromStore\Components\Article\InventoryReader" />
+
+            <tag name="impex.handling.transferor" sequence="sgate_inventory_import" />
+        </service>
+
+        <!-- ArticleFilter -->
+        <service id="SgateShipFromStore\Components\Article\ArticleFilter">
+            <argument type="service" id="dbal_connection" />
+            <argument type="service" id="sgate_ship_from_store.config.per_shop" />
+
+            <tag name="impex.handling" sequence="sgate_inventory_import" priority="950" />
+        </service>
+
+        <!-- StockUpdater -->
+        <service id="SgateShipFromStore\Components\Article\StockUpdater">
+            <argument type="service" id="models" />
+            <argument type="service" id="sgate_ship_from_store.config.per_shop" />
+
+            <tag name="impex.handling" sequence="sgate_inventory_import" priority="100" />
+        </service>
+
+        <!-- StockImportSubscriber -->
+        <service id="SgateShipFromStore\Components\Article\Subscriber\StockImportSubscriber">
+            <argument type="service" id="SgateShipFromStore\Framework\Sequence\Task\RecordHandlingTaskFactory" />
+            
+            <tag name="shopware.event_subscriber" />
+        </service>
+
+    </services>
+</container>

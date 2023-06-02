@@ -1,8 +1,19 @@
 <container xmlns="http://symfony.com/schema/dic/services"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    
+    <parameters>
+
+        <!-- sgate_ship_from_store.date_time_format -->
+        <parameter key="sgate_ship_from_store.date_time_format">Y-m-d\TH:i:s.000P</parameter>
+
+        <!-- sgate_ship_from_store.meta_file -->
+        <parameter key="sgate_ship_from_store.meta_file">%sgate_ship_from_store.plugin_dir%/Resources/metadata.yaml</parameter>
+
+    </parameters>
+    
     <services>
-        
+
         <!-- ConfigService -->
         <service id="SgateShipFromStore\Components\ConfigService" public="true">
             <argument type="service" id="Shopware\Components\Plugin\Configuration\ReaderInterface" />
@@ -32,6 +43,11 @@
             <argument type="service" id="SgateShipFromStore\Framework\Logger" />
             <argument type="service" id="sgate_ship_from_store.config.per_shop" />
             <argument type="service" id="Shopware\Components\Validator\EmailValidator" />
+        </service>
+
+        <!-- DateTimeConverter -->
+        <service id="sgate_ship_from_store.date_time_converter" class="Dustin\ImpEx\Serializer\Converter\DateTime\DateTimeConverter">
+            <argument type="string">%sgate_ship_from_store.date_time_format%</argument>
         </service>
 
     </services>

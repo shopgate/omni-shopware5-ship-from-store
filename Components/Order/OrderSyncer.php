@@ -3,7 +3,6 @@
 namespace SgateShipFromStore\Components\Order;
 
 use Dustin\Encapsulation\Container;
-use Dustin\ImpEx\Sequence\RecordHandling;
 use Psr\Log\LoggerInterface;
 use SgateShipFromStore\Components\Order\Encapsulation\Order;
 use SgateShipFromStore\Components\Order\Encapsulation\OrderContainer;
@@ -20,7 +19,7 @@ use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-class OrderSyncer extends InlineRecordHandling implements RecordHandling
+class OrderSyncer extends InlineRecordHandling
 {
     /**
      * @var NormalizerInterface

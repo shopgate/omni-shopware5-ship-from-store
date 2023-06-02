@@ -4,7 +4,7 @@
     <services>
         
         <!-- ShopIterator -->
-        <service id="SgateShipFromStore\Components\Shop\ShopIterator">
+        <service id="SgateShipFromStore\Components\Shop\ShopIterator" public="true">
             <argument type="service" id="dbal_connection" />
         </service>
 

@@ -5,10 +5,10 @@ namespace SgateShipFromStore\Components\Order;
 use Doctrine\DBAL\Connection;
 use Dustin\Encapsulation\ArrayEncapsulation;
 use Dustin\ImpEx\Serializer\Normalizer\EncapsulationNormalizer;
-use SgateShipFromStore\Framework\Reader\Reader;
+use SgateShipFromStore\Framework\Reader\DbalReader;
 use SgateShipFromStore\Framework\Util\ArrayUtil;
 
-class OrderReader extends Reader
+class OrderReader extends DbalReader
 {
     /**
      * @var ArrayEncapsulation

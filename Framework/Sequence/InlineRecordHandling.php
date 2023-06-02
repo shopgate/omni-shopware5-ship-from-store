@@ -29,7 +29,7 @@ abstract class InlineRecordHandling implements RecordHandling
     protected function validateContainer($container): void
     {
         if (!$container instanceof Container) {
-            throw new \UnexpectedValueException(sprintf('Expected record to be %s. Got %.', Container::class, Type::getDebugType($container)));
+            throw new \UnexpectedValueException(sprintf('Expected record to be %s. Got %s.', Container::class, Type::getDebugType($container)));
         }
     }
 
