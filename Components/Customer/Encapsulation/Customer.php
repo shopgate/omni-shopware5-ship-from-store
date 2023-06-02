@@ -40,4 +40,9 @@ class Customer extends PropertyEncapsulation
      * @var string
      */
     protected $shopwareId;
+
+    public function getShopgateKey(): string
+    {
+        return $this->get('internalCustomerNumber') ?? $this->get('emailAddress');
+    }
 }

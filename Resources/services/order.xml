@@ -5,7 +5,8 @@
         
         <!-- OrderNormalizer -->
         <service id="SgateShipFromStore\Components\Order\Serializer\OrderNormalizer">
-            <argument type="string">%sgate_ship_from_store.plugin_dir%/Resources/metadata.yaml</argument>
+            <argument type="string">%sgate_ship_from_store.meta_file%</argument>
+            <argument type="service" id="sgate_ship_from_store.date_time_converter" />
         </service>
 
         <!-- OrderReader -->        
