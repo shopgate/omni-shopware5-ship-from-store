@@ -30,8 +30,9 @@ class OrderReader extends DbalReader
         $sql = 'SELECT `order`.`id` 
             FROM `s_order` `order` 
             LEFT JOIN `s_order_attributes` `order_attribute` ON `order`.`id` = `order_attribute`.`orderID`
-            WHERE `order_attribute`.`sgate_ship_from_store_exported` = 0
-                OR `order_attribute`.`sgate_ship_from_store_exported` IS NULL
+            WHERE (`order_attribute`.`sgate_ship_from_store_exported` = 0 OR `order_attribute`.`sgate_ship_from_store_exported` IS NULL) 
+                AND `order`.`ordernumber` <> 0
+
             ORDER BY `order`.`language`, `order`.`ordertime`';
 
         yield from $this->connection->executeQuery($sql)->fetchAll(\PDO::FETCH_COLUMN);
