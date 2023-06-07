@@ -48,6 +48,22 @@
             <description lang="en">Provide one or more mail addresses (separated by comma) to send error reports to.</description>
         </element>
 
+        <!-- paymentStatusId -->
+        <element type="combo" scope="shop">
+            <name>paymentStatusId</name>
+            <label lang="de">Zahlungsstatus</label>
+            <label lang="en">Payment status</label>
+            <description lang="de">Nur Bestellungen mit diesem Zahlungsstatus werden übertragen.</description>
+            <description lang="en">Only orders with this payment status will be transferred.</description>
+            <store>Shopware.apps.Base.store.PaymentStatus</store>
+            <options>
+                <multiSelect>false</multiSelect>
+                <valueField>id</valueField>
+                <displayField>description</displayField>
+                <isCustomStore>true</isCustomStore>
+            </options>
+        </element>
+
         <!-- env -->
         <element type="select">
             <name>env</name>
@@ -120,8 +136,8 @@
         <!-- Dev API -->
         <element type="button">
             <name>buttonDevApi</name>
-            <label lang="de">&#60;b&#62;Development API&#60;/b&#62;</label>
-            <label lang="en">&#60;b&#62;Development API&#60;/b&#62;</label>
+            <label lang="de">&#60;b&#62;Staging API&#60;/b&#62;</label>
+            <label lang="en">&#60;b&#62;Staging API&#60;/b&#62;</label>
         </element>
 
         <!-- merchantCodeDev -->
@@ -169,24 +185,8 @@
         <!-- Status -->
         <element type="button">
             <name>buttonStatus</name>
-            <label lang="de">&#60;b&#62;Status-Einstellungen&#60;/b&#62;</label>
-            <label lang="en">&#60;b&#62;Status settings&#60;/b&#62;</label>
-        </element>
-
-        <!-- paymentStatusId -->
-        <element type="combo" scope="shop">
-            <name>paymentStatusId</name>
-            <label lang="de">Zahlungsstatus</label>
-            <label lang="en">Payment status</label>
-            <description lang="de">Nur Bestellungen mit diesem Zahlungsstatus werden übertragen.</description>
-            <description lang="en">Only orders with this payment status will be transferred.</description>
-            <store>Shopware.apps.Base.store.PaymentStatus</store>
-            <options>
-                <multiSelect>false</multiSelect>
-                <valueField>id</valueField>
-                <displayField>description</displayField>
-                <isCustomStore>true</isCustomStore>
-            </options>
+            <label lang="de">&#60;b&#62;Bestellstatus-Mapping&#60;/b&#62;</label>
+            <label lang="en">&#60;b&#62;Order state mapping&#60;/b&#62;</label>
         </element>
 
         <!-- newStatus -->
@@ -304,8 +304,8 @@
         <!-- URLs -->
         <element type="button">
             <name>buttonUrls</name>
-            <label lang="de">&#60;b&#62;URLs&#60;/b&#62;</label>
-            <label lang="en">&#60;b&#62;URLs&#60;/b&#62;</label>
+            <label lang="de">&#60;b&#62;Webhooks&#60;/b&#62;</label>
+            <label lang="en">&#60;b&#62;Webhooks&#60;/b&#62;</label>
         </element>
 
         <!-- orderStatusUrl -->
