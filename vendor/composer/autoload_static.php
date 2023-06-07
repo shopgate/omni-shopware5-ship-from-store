@@ -19,6 +19,7 @@ class ComposerStaticInit47fe998ef02fcdc3ba740c4316dcb999
         array (
             'Symfony\\Polyfill\\Ctype\\' => 23,
             'Symfony\\Component\\Yaml\\' => 23,
+            'Symfony\\Component\\Serializer\\' => 29,
             'Shopgate\\ConnectSdk\\Tests\\' => 26,
             'Shopgate\\ConnectSdk\\' => 20,
         ),
@@ -43,6 +44,10 @@ class ComposerStaticInit47fe998ef02fcdc3ba740c4316dcb999
         'Symfony\\Component\\Yaml\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/yaml',
+        ),
+        'Symfony\\Component\\Serializer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/serializer',
         ),
         'Shopgate\\ConnectSdk\\Tests\\' => 
         array (
