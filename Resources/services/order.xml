@@ -9,6 +9,11 @@
             <argument type="service" id="sgate_ship_from_store.date_time_converter" />
         </service>
 
+        <!-- OrderStatusUpdateNormalizer -->
+        <service id="SgateShipFromStore\Components\Order\Serializer\OrderStatusUpdateNormalizer" public="true">
+            <argument type="string">%sgate_ship_from_store.meta_file%</argument>
+        </service>
+
         <!-- OrderReader -->        
         <service id="SgateShipFromStore\Components\Order\OrderReader">
             <argument type="service" id="dbal_connection" />
@@ -40,6 +45,15 @@
             <argument type="service" id="SgateShipFromStore\Framework\Sequence\Task\RecordHandlingTaskFactory" />
             
             <tag name="shopware.event_subscriber" />
+        </service>
+
+        <!-- OrderStatusUpdater -->
+        <service id="SgateShipFromStore\Components\Order\OrderStatusUpdater">
+            <argument type="service" id="sgate_ship_from_store.config.default" />
+            <argument type="service" id="SgateShipFromStore\Framework\Logger" />
+            <argument type="service" id="dbal_connection" />
+
+            <tag name="impex.handling" sequence="sgate_order_update" priority="500" />
         </service>
 
     </services>

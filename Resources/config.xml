@@ -191,7 +191,7 @@
 
         <!-- newStatus -->
         <element type="combo">
-            <name>newStatus</name>
+            <name>newStatusId</name>
             <label lang="de">Bestellstatus "neu"</label>
             <label lang="en">Order status "new"</label>
             <store>Shopware.apps.Base.store.OrderStatus</store>
@@ -205,7 +205,7 @@
 
         <!-- openStatus -->
         <element type="combo">
-            <name>openStatus</name>
+            <name>openStatusId</name>
             <label lang="de">Bestellstatus "offen"</label>
             <label lang="en">Order status "open"</label>
             <store>Shopware.apps.Base.store.OrderStatus</store>
@@ -219,7 +219,7 @@
 
         <!-- rejectedStatus -->
         <element type="combo">
-            <name>rejectedStatus</name>
+            <name>rejectedStatusId</name>
             <label lang="de">Bestellstatus "Abgelehnt"</label>
             <label lang="en">Order status "rejected"</label>
             <store>Shopware.apps.Base.store.OrderStatus</store>
@@ -233,7 +233,7 @@
 
         <!-- canceledStatus -->
         <element type="combo">
-            <name>canceledStatus</name>
+            <name>canceledStatusId</name>
             <label lang="de">Bestellstatus "Abgebrochen"</label>
             <label lang="en">Order status "canceled"</label>
             <store>Shopware.apps.Base.store.OrderStatus</store>
@@ -247,7 +247,7 @@
 
         <!-- readyStatus -->
         <element type="combo">
-            <name>readyStatus</name>
+            <name>readyStatusId</name>
             <label lang="de">Bestellstatus "bereit"</label>
             <label lang="en">Order status "ready"</label>
             <store>Shopware.apps.Base.store.OrderStatus</store>
@@ -261,7 +261,7 @@
 
         <!-- fulfilledStatus -->
         <element type="combo">
-            <name>fulfilledStatus</name>
+            <name>fulfilledStatusId</name>
             <label lang="de">Bestellstatus "erfüllt"</label>
             <label lang="en">Order status "fulfilled"</label>
             <store>Shopware.apps.Base.store.OrderStatus</store>
@@ -275,7 +275,7 @@
 
         <!-- completedStatus -->
         <element type="combo">
-            <name>completedStatus</name>
+            <name>completedStatusId</name>
             <label lang="de">Bestellstatus "komplett abgeschlossen"</label>
             <label lang="en">Order status "completed"</label>
             <store>Shopware.apps.Base.store.OrderStatus</store>
@@ -289,7 +289,7 @@
 
         <!-- inProgressStatus -->
         <element type="combo">
-            <name>inProgressStatus</name>
+            <name>inProgressStatusId</name>
             <label lang="de">Bestellstatus "in Bearbeitung"</label>
             <label lang="en">Order status "in progress"</label>
             <store>Shopware.apps.Base.store.OrderStatus</store>

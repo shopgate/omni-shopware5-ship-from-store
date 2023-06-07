@@ -154,3 +154,10 @@ SgateShipFromStore\Components\Article\Encapsulation\Inventory:
       groups: ['normalization', 'denormalization']
     shopId:
       groups: ['normalization', 'denormalization']
+
+SgateShipFromStore\Components\Order\Encapsulation\OrderStatusUpdate:
+  attributes:
+    salesOrderNumber:
+      groups: ['denormalization']
+    newStatus:
+      groups: ['denormalization']
