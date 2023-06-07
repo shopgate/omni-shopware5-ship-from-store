@@ -17,7 +17,7 @@ class InventoryNormalizer extends EncapsulationNormalizer
     {
         return [
             self::CONVERTERS => [
-                'available' => new IntConverter(),
+                'visible' => new IntConverter(),
                 'shopId' => new IntConverter(),
             ],
         ];
