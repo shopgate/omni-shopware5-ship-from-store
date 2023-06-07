@@ -35,4 +35,9 @@ class Product extends PropertyEncapsulation
      * @var Identifiers
      */
     protected $identifiers;
+
+    /**
+     * @var string|null
+     */
+    protected $image;
 }
