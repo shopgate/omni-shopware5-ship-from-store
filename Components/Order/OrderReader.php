@@ -27,7 +27,7 @@ class OrderReader extends DbalReader
 
     public function getNextUpIdentifiers(): \Generator
     {
-        $sql = 'SELECT `order`.`id` 
+        $sql = 'SELECT `order`.`id` as `id`, `order`.`cleared` as `paymentStatusId`, `order`.`language` as `shopId`
             FROM `s_order` `order` 
             LEFT JOIN `s_order_attributes` `order_attribute` ON `order`.`id` = `order_attribute`.`orderID`
             WHERE (`order_attribute`.`sgate_ship_from_store_exported` = 0 OR `order_attribute`.`sgate_ship_from_store_exported` IS NULL) 
@@ -35,7 +35,19 @@ class OrderReader extends DbalReader
 
             ORDER BY `order`.`language`, `order`.`ordertime`';
 
-        yield from $this->connection->executeQuery($sql)->fetchAll(\PDO::FETCH_COLUMN);
+        $orders = $this->connection->executeQuery($sql)->fetchAll();
+
+        $orders = array_filter($orders, function (array $order) {
+            $statusId = $this->config->get($order['shopId'])->get('paymentStatusId');
+
+            if ($statusId === null) {
+                return true;
+            }
+
+            return (int) $order['paymentStatusId'] === (int) $statusId;
+        });
+
+        yield from array_column($orders, 'id');
     }
 
     protected function read($id): array
