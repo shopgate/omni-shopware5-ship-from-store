@@ -17,7 +17,7 @@ class Inventory extends Record implements ShopIdInterface, ProductCodeInterface,
     /**
      * @var int
      */
-    protected $available;
+    protected $visible;
 
     /**
      * @var int
