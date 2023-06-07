@@ -19,6 +19,7 @@
             <argument type="service" id="dbal_connection" />
             <argument type="service" id="SgateShipFromStore\Components\Order\Serializer\OrderNormalizer" />
             <argument type="service" id="sgate_ship_from_store.config.per_shop" />
+            <argument type="service" id="shopware_media.media_service" />
         </service>
 
         <!-- OrderTransferor -->
