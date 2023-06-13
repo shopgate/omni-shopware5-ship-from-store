@@ -11,10 +11,7 @@ class PluginConfigSubscriber implements SubscriberInterface
      * TODO replace dummy urls.
      */
     private $urls = [
-        'orderStatusUrl' => 'my url',
-        'deliveryConfirmationUrl' => 'my url',
-        'returnMailUrl' => 'my url',
-        'returnConfirmationUrl' => 'my url',
+        'orderStatusUrl' => '/api/SgateShipFromStoreUpdateOrder',
     ];
 
     /**

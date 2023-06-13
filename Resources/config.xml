@@ -318,35 +318,5 @@
             </options>
         </element>
 
-        <!-- deliveryConfirmationUrl -->
-        <element type="text" scope="shop">
-            <name>deliveryConfirmationUrl</name>
-            <label lang="de">Versandmeldungen</label>
-            <label lang="en">Delivery confirmations</label>
-            <options>
-                <disabled>true</disabled>
-            </options>
-        </element>
-
-        <!-- returnMailUrl -->
-        <element type="text" scope="shop">
-            <name>returnMailUrl</name>
-            <label lang="de">Retouren-Mail</label>
-            <label lang="en">Return e-mail</label>
-            <options>
-                <disabled>true</disabled>
-            </options>
-        </element>
-
-        <!-- returnConfirmationUrl -->
-        <element type="text" scope="shop">
-            <name>returnConfirmationUrl</name>
-            <label lang="de">Retouren-Eingang</label>
-            <label lang="en">Return confirmation</label>
-            <options>
-                <disabled>true</disabled>
-            </options>
-        </element>
-
     </elements>
 </config>
