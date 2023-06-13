@@ -4,6 +4,7 @@ namespace SgateShipFromStore\Framework\Sequence\Task;
 
 use Dustin\ImpEx\Sequence\Registry\RecordHandlingRegistry;
 use Dustin\ImpEx\Sequence\Registry\TransferorRegistry;
+use Dustin\ImpEx\Sequence\Transferor;
 
 class RecordHandlingTaskFactory
 {
@@ -25,9 +26,9 @@ class RecordHandlingTaskFactory
         $this->transferorRegistry = $transferorRegistry;
     }
 
-    public function buildTask(string $sequenceName): RecordHandlingTask
+    public function buildTask(string $sequenceName, ?Transferor $transferor = null): RecordHandlingTask
     {
-        $transferor = $this->transferorRegistry->getTransferor($sequenceName);
+        $transferor = $transferor ?? $this->transferorRegistry->getTransferor($sequenceName);
         $sequence = $this->sequenceRegistry->createRecordHandling($sequenceName);
 
         return new RecordHandlingTask($transferor, $sequence);

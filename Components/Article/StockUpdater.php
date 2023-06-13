@@ -49,7 +49,7 @@ class StockUpdater extends InlineRecordHandling
                 continue;
             }
 
-            $article->setInStock($inventory->get('available'));
+            $article->setInStock($inventory->get('visible'));
         }
 
         $this->modelManager->flush();

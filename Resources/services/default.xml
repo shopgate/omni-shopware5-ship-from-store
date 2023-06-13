@@ -22,7 +22,7 @@
         </service>
 
         <!-- default config -->
-        <service id="sgate_ship_from_store.config.default" class="Dustin\Encapsulation\ArrayEncapsulation">
+        <service id="sgate_ship_from_store.config.default" class="Dustin\Encapsulation\ArrayEncapsulation" public="true">
             <factory service="SgateShipFromStore\Components\ConfigService" method="getConfig" />
             <argument type="string">default</argument>
         </service>
@@ -34,7 +34,7 @@
         </service>
 
         <!-- Logger -->
-        <service id="SgateShipFromStore\Framework\Logger">
+        <service id="SgateShipFromStore\Framework\Logger" public="true">
             <argument type="service" id="sgate_ship_from_store.logger" />
         </service>
 

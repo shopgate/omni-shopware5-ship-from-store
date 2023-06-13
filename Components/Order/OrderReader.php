@@ -7,6 +7,7 @@ use Dustin\Encapsulation\ArrayEncapsulation;
 use Dustin\ImpEx\Serializer\Normalizer\EncapsulationNormalizer;
 use SgateShipFromStore\Framework\Reader\DbalReader;
 use SgateShipFromStore\Framework\Util\ArrayUtil;
+use Shopware\Bundle\MediaBundle\MediaService;
 
 class OrderReader extends DbalReader
 {
@@ -15,19 +16,26 @@ class OrderReader extends DbalReader
      */
     private $config;
 
+    /**
+     * @var MediaService
+     */
+    private $mediaService;
+
     public function __construct(
         Connection $connection,
         EncapsulationNormalizer $denormalizer,
-        ArrayEncapsulation $config
+        ArrayEncapsulation $config,
+        MediaService $mediaService
     ) {
         $this->config = $config;
+        $this->mediaService = $mediaService;
 
         parent::__construct($connection, $denormalizer);
     }
 
     public function getNextUpIdentifiers(): \Generator
     {
-        $sql = 'SELECT `order`.`id` 
+        $sql = 'SELECT `order`.`id` as `id`, `order`.`cleared` as `paymentStatusId`, `order`.`language` as `shopId`
             FROM `s_order` `order` 
             LEFT JOIN `s_order_attributes` `order_attribute` ON `order`.`id` = `order_attribute`.`orderID`
             WHERE (`order_attribute`.`sgate_ship_from_store_exported` = 0 OR `order_attribute`.`sgate_ship_from_store_exported` IS NULL) 
@@ -35,7 +43,19 @@ class OrderReader extends DbalReader
 
             ORDER BY `order`.`language`, `order`.`ordertime`';
 
-        yield from $this->connection->executeQuery($sql)->fetchAll(\PDO::FETCH_COLUMN);
+        $orders = $this->connection->executeQuery($sql)->fetchAll();
+
+        $orders = array_filter($orders, function (array $order) {
+            $statusId = $this->config->get($order['shopId'])->get('paymentStatusId');
+
+            if ($statusId === null) {
+                return true;
+            }
+
+            return (int) $order['paymentStatusId'] === (int) $statusId;
+        });
+
+        yield from array_column($orders, 'id');
     }
 
     protected function read($id): array
@@ -171,6 +191,7 @@ class OrderReader extends DbalReader
                 ) as `taxAmount`',
                 '`line_item`.`modus` as `type`',
                 '`order`.`currency` as `currencyCode`',
+                '`media`.`path` as `product.mediaPath`',
             ])
             ->from('`s_order_details`', '`line_item`')
             ->leftJoin('`line_item`', '`s_articles_prices`', '`article_price`', '`line_item`.`articleDetailID` = `article_price`.`articledetailsID`')
@@ -180,9 +201,12 @@ class OrderReader extends DbalReader
             ->leftJoin('`line_item`', '`s_order`', '`order`', '`line_item`.`orderID` = `order`.`id`')
             ->leftJoin('`order`', '`s_core_shops`', '`shop`', '`order`.`language` = `shop`.`id`')
             ->leftJoin('`shop`', '`s_core_customergroups`', '`shop_customer_group`', '`shop`.`customer_group_id` = `shop_customer_group`.`id`')
+            ->leftJoin('`article`', '`s_articles_img`', '`article_media`', '`article`.`id` = `article_media`.`articleID`')
+            ->leftJoin('`article_media`', '`s_media`', '`media`', '`article_media`.`media_id` = `media`.`id`')
             ->where('`line_item`.`orderID` = :orderId')
             ->andWhere('`article_price`.`pricegroup` = `shop_customer_group`.`groupkey` OR `line_item`.`modus` <> 0')
             ->andWhere('`article_price`.`from` = 1 OR `line_item`.`modus` <> 0')
+            ->andWhere('`article_media`.`main` = 1 OR `article_media`.`main` IS NULL')
             ->setParameter('orderId', $orderId)
             ->execute()->fetchAll();
 
@@ -192,6 +216,10 @@ class OrderReader extends DbalReader
             $config = $this->config->get($lineItem['shopId']);
             $lineItem['product']['code'] = $lineItem['product']['identifiers'][$config->get('productCode')];
             unset($lineItem['shopId']);
+
+            $mediaPath = $lineItem['product']['mediaPath'];
+            $lineItem['product']['image'] = $mediaPath !== null ? $this->mediaService->getUrl($mediaPath) : null;
+            unset($lineItem['product']['mediaPath']);
         }
 
         return $data;

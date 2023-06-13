@@ -48,6 +48,22 @@
             <description lang="en">Provide one or more mail addresses (separated by comma) to send error reports to.</description>
         </element>
 
+        <!-- paymentStatusId -->
+        <element type="combo" scope="shop">
+            <name>paymentStatusId</name>
+            <label lang="de">Zahlungsstatus</label>
+            <label lang="en">Payment status</label>
+            <description lang="de">Nur Bestellungen mit diesem Zahlungsstatus werden übertragen.</description>
+            <description lang="en">Only orders with this payment status will be transferred.</description>
+            <store>Shopware.apps.Base.store.PaymentStatus</store>
+            <options>
+                <multiSelect>false</multiSelect>
+                <valueField>id</valueField>
+                <displayField>description</displayField>
+                <isCustomStore>true</isCustomStore>
+            </options>
+        </element>
+
         <!-- env -->
         <element type="select">
             <name>env</name>
@@ -120,8 +136,8 @@
         <!-- Dev API -->
         <element type="button">
             <name>buttonDevApi</name>
-            <label lang="de">&#60;b&#62;Development API&#60;/b&#62;</label>
-            <label lang="en">&#60;b&#62;Development API&#60;/b&#62;</label>
+            <label lang="de">&#60;b&#62;Staging API&#60;/b&#62;</label>
+            <label lang="en">&#60;b&#62;Staging API&#60;/b&#62;</label>
         </element>
 
         <!-- merchantCodeDev -->
@@ -169,29 +185,13 @@
         <!-- Status -->
         <element type="button">
             <name>buttonStatus</name>
-            <label lang="de">&#60;b&#62;Status-Einstellungen&#60;/b&#62;</label>
-            <label lang="en">&#60;b&#62;Status settings&#60;/b&#62;</label>
-        </element>
-
-        <!-- paymentStatusId -->
-        <element type="combo" scope="shop">
-            <name>paymentStatusId</name>
-            <label lang="de">Zahlungsstatus</label>
-            <label lang="en">Payment status</label>
-            <description lang="de">Nur Bestellungen mit diesem Zahlungsstatus werden übertragen.</description>
-            <description lang="en">Only orders with this payment status will be transferred.</description>
-            <store>Shopware.apps.Base.store.PaymentStatus</store>
-            <options>
-                <multiSelect>false</multiSelect>
-                <valueField>id</valueField>
-                <displayField>description</displayField>
-                <isCustomStore>true</isCustomStore>
-            </options>
+            <label lang="de">&#60;b&#62;Bestellstatus-Mapping&#60;/b&#62;</label>
+            <label lang="en">&#60;b&#62;Order state mapping&#60;/b&#62;</label>
         </element>
 
         <!-- newStatus -->
         <element type="combo">
-            <name>newStatus</name>
+            <name>newStatusId</name>
             <label lang="de">Bestellstatus "neu"</label>
             <label lang="en">Order status "new"</label>
             <store>Shopware.apps.Base.store.OrderStatus</store>
@@ -205,7 +205,7 @@
 
         <!-- openStatus -->
         <element type="combo">
-            <name>openStatus</name>
+            <name>openStatusId</name>
             <label lang="de">Bestellstatus "offen"</label>
             <label lang="en">Order status "open"</label>
             <store>Shopware.apps.Base.store.OrderStatus</store>
@@ -219,7 +219,7 @@
 
         <!-- rejectedStatus -->
         <element type="combo">
-            <name>rejectedStatus</name>
+            <name>rejectedStatusId</name>
             <label lang="de">Bestellstatus "Abgelehnt"</label>
             <label lang="en">Order status "rejected"</label>
             <store>Shopware.apps.Base.store.OrderStatus</store>
@@ -233,7 +233,7 @@
 
         <!-- canceledStatus -->
         <element type="combo">
-            <name>canceledStatus</name>
+            <name>canceledStatusId</name>
             <label lang="de">Bestellstatus "Abgebrochen"</label>
             <label lang="en">Order status "canceled"</label>
             <store>Shopware.apps.Base.store.OrderStatus</store>
@@ -247,7 +247,7 @@
 
         <!-- readyStatus -->
         <element type="combo">
-            <name>readyStatus</name>
+            <name>readyStatusId</name>
             <label lang="de">Bestellstatus "bereit"</label>
             <label lang="en">Order status "ready"</label>
             <store>Shopware.apps.Base.store.OrderStatus</store>
@@ -261,7 +261,7 @@
 
         <!-- fulfilledStatus -->
         <element type="combo">
-            <name>fulfilledStatus</name>
+            <name>fulfilledStatusId</name>
             <label lang="de">Bestellstatus "erfüllt"</label>
             <label lang="en">Order status "fulfilled"</label>
             <store>Shopware.apps.Base.store.OrderStatus</store>
@@ -275,7 +275,7 @@
 
         <!-- completedStatus -->
         <element type="combo">
-            <name>completedStatus</name>
+            <name>completedStatusId</name>
             <label lang="de">Bestellstatus "komplett abgeschlossen"</label>
             <label lang="en">Order status "completed"</label>
             <store>Shopware.apps.Base.store.OrderStatus</store>
@@ -289,7 +289,7 @@
 
         <!-- inProgressStatus -->
         <element type="combo">
-            <name>inProgressStatus</name>
+            <name>inProgressStatusId</name>
             <label lang="de">Bestellstatus "in Bearbeitung"</label>
             <label lang="en">Order status "in progress"</label>
             <store>Shopware.apps.Base.store.OrderStatus</store>
@@ -304,8 +304,8 @@
         <!-- URLs -->
         <element type="button">
             <name>buttonUrls</name>
-            <label lang="de">&#60;b&#62;URLs&#60;/b&#62;</label>
-            <label lang="en">&#60;b&#62;URLs&#60;/b&#62;</label>
+            <label lang="de">&#60;b&#62;Webhooks&#60;/b&#62;</label>
+            <label lang="en">&#60;b&#62;Webhooks&#60;/b&#62;</label>
         </element>
 
         <!-- orderStatusUrl -->
@@ -313,36 +313,6 @@
             <name>orderStatusUrl</name>
             <label lang="de">Bestellstatus-Updates</label>
             <label lang="en">order status updates</label>
-            <options>
-                <disabled>true</disabled>
-            </options>
-        </element>
-
-        <!-- deliveryConfirmationUrl -->
-        <element type="text" scope="shop">
-            <name>deliveryConfirmationUrl</name>
-            <label lang="de">Versandmeldungen</label>
-            <label lang="en">Delivery confirmations</label>
-            <options>
-                <disabled>true</disabled>
-            </options>
-        </element>
-
-        <!-- returnMailUrl -->
-        <element type="text" scope="shop">
-            <name>returnMailUrl</name>
-            <label lang="de">Retouren-Mail</label>
-            <label lang="en">Return e-mail</label>
-            <options>
-                <disabled>true</disabled>
-            </options>
-        </element>
-
-        <!-- returnConfirmationUrl -->
-        <element type="text" scope="shop">
-            <name>returnConfirmationUrl</name>
-            <label lang="de">Retouren-Eingang</label>
-            <label lang="en">Return confirmation</label>
             <options>
                 <disabled>true</disabled>
             </options>

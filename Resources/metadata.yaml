@@ -145,12 +145,21 @@ SgateShipFromStore\Components\Order\Encapsulation\Product:
       groups: ['normalization', 'denormalization']
     identifiers:
       groups: ['normalization', 'denormalization']
+    image:
+      groups: ['normalization', 'denormalization']
 
 SgateShipFromStore\Components\Article\Encapsulation\Inventory:
   attributes:
     productCode:
       groups: ['normalization', 'denormalization']
-    available:
+    visible:
       groups: ['normalization', 'denormalization']
     shopId:
       groups: ['normalization', 'denormalization']
+
+SgateShipFromStore\Components\Order\Encapsulation\OrderStatusUpdate:
+  attributes:
+    salesOrderNumber:
+      groups: ['denormalization']
+    newStatus:
+      groups: ['denormalization']

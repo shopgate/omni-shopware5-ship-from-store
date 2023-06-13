@@ -22,5 +22,13 @@
             <tag name="impex.handling" sequence="sgate_inventory_import" priority="900" />
         </service>
 
+        <!-- Validator -->
+        <service id="SgateShipFromStore\Framework\Sequence\Validator" public="true">
+            <argument type="service" id="validator" />
+            <argument type="service" id="SgateShipFromStore\Framework\Logger" />
+
+            <tag name="impex.handling" sequence="sgate_order_update" priority="1000" />
+        </service>
+
     </services>
 </container>
