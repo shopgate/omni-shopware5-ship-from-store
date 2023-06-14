@@ -165,3 +165,8 @@ SgateShipFromStore\Components\Order\Encapsulation\OrderStatusUpdate:
       groups: ['denormalization']
     newStatus:
       groups: ['denormalization']
+
+SgateShipFromStore\Components\Order\Encapsulation\OrderRelation:
+  attributes:
+    salesOrderNumber:
+      groups: ['denormalization']
