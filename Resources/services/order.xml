@@ -33,7 +33,7 @@
         <service id="SgateShipFromStore\Components\Order\OrderSyncer">
             <argument type="service" id="SgateShipFromStore\Components\Order\Serializer\OrderNormalizer" />
             <argument type="service" id="SgateShipFromStore\Components\Order\Serializer\OrderNormalizer" />
-            <argument type="service" id="SgateShipFromStore\Components\ShopgateSdkRegistry" />
+            <argument type="service" id="SgateShipFromStore\Framework\ShopgateSdkRegistry" />
             <argument type="service" id="SgateShipFromStore\Framework\Logger" />
             <argument type="service" id="models" />
             <argument type="service" id="SgateShipFromStore\Framework\ExceptionHandler" />

@@ -7,7 +7,7 @@ use Dustin\Encapsulation\Container;
 use Dustin\Encapsulation\Encapsulation;
 use SgateShipFromStore\Components\Customer\Encapsulation\Customer;
 use SgateShipFromStore\Components\Customer\Encapsulation\CustomerContainer;
-use SgateShipFromStore\Components\ShopgateSdkRegistry;
+use SgateShipFromStore\Framework\ShopgateSdkRegistry;
 use SgateShipFromStore\Framework\ExceptionHandler;
 use SgateShipFromStore\Framework\Sequence\InlineRecordHandling;
 use Shopware\Components\Model\ModelManager;

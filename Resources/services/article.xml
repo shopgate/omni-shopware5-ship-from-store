@@ -11,7 +11,7 @@
         <!-- InventoryReader -->        
         <service id="SgateShipFromStore\Components\Article\InventoryReader">
             <argument type="service" id="SgateShipFromStore\Components\Article\Serializer\InventoryNormalizer" />
-            <argument type="service" id="SgateShipFromStore\Components\ShopgateSdkRegistry" />
+            <argument type="service" id="SgateShipFromStore\Framework\ShopgateSdkRegistry" />
             <argument type="service" id="sgate_ship_from_store.config.per_shop" />
             <argument type="service" id="SgateShipFromStore\Components\Shop\ShopIterator" />
             <argument type="service" id="sgate_ship_from_store.date_time_converter" />
