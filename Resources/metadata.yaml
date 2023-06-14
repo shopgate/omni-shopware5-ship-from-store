@@ -71,6 +71,8 @@ SgateShipFromStore\Components\Customer\Encapsulation\Customer:
       groups: ['normalization', 'denormalization']
     shopwareId:
       groups: ['denormalization']
+    salutation:
+      groups: ['denormalization']
 
 SgateShipFromStore\Components\Order\Encapsulation\Address:
   attributes:
