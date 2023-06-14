@@ -3,6 +3,8 @@
 namespace SgateShipFromStore\Components\Shop;
 
 use Doctrine\DBAL\Connection;
+use Shopware\Components\Model\ModelManager;
+use Shopware\Models\Shop\Shop as ShopEntity;
 
 class ShopIterator implements \IteratorAggregate
 {
@@ -12,13 +14,21 @@ class ShopIterator implements \IteratorAggregate
     private $connection;
 
     /**
+     * @var ModelManager
+     */
+    private $modelManager;
+
+    /**
      * @var array|null
      */
     private $shops = null;
 
-    public function __construct(Connection $connection)
+    private $models = [];
+
+    public function __construct(Connection $connection, ModelManager $modelManager)
     {
         $this->connection = $connection;
+        $this->modelManager = $modelManager;
     }
 
     public function getIterator(): \Traversable
@@ -26,6 +36,15 @@ class ShopIterator implements \IteratorAggregate
         $this->loadShops();
 
         yield from $this->shops;
+    }
+
+    public function getModel(int $shopId): ShopEntity
+    {
+        if (!isset($this->models[$shopId])) {
+            $this->models[$shopId] = $this->modelManager->getRepository(ShopEntity::class)->findOneBy(['id' => $shopId]);
+        }
+
+        return $this->models[$shopId];
     }
 
     private function loadShops(): void
