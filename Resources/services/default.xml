@@ -15,7 +15,7 @@
     <services>
 
         <!-- ConfigService -->
-        <service id="SgateShipFromStore\Components\ConfigService" public="true">
+        <service id="SgateShipFromStore\Framework\ConfigService" public="true">
             <argument type="service" id="Shopware\Components\Plugin\Configuration\ReaderInterface" />
             <argument type="service" id="SgateShipFromStore\Components\Shop\ShopIterator" />
             <argument type="string">%sgate_ship_from_store.plugin_name%</argument>
@@ -23,13 +23,13 @@
 
         <!-- default config -->
         <service id="sgate_ship_from_store.config.default" class="Dustin\Encapsulation\ArrayEncapsulation" public="true">
-            <factory service="SgateShipFromStore\Components\ConfigService" method="getConfig" />
+            <factory service="SgateShipFromStore\Framework\ConfigService" method="getConfig" />
             <argument type="string">default</argument>
         </service>
 
         <!-- per-shop-config -->
         <service id="sgate_ship_from_store.config.per_shop" class="Dustin\Encapsulation\ArrayEncapsulation" public="true">
-            <factory service="SgateShipFromStore\Components\ConfigService" method="getConfig" />
+            <factory service="SgateShipFromStore\Framework\ConfigService" method="getConfig" />
             <argument type="string">per_shop</argument>
         </service>
 

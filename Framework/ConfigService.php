@@ -1,6 +1,6 @@
 <?php
 
-namespace SgateShipFromStore\Components;
+namespace SgateShipFromStore\Framework;
 
 use Dustin\Encapsulation\ArrayEncapsulation;
 use Dustin\Encapsulation\Encapsulation;

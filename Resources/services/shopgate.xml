@@ -4,7 +4,7 @@
     <services>
 
         <!-- ShopgateSdkRegistry -->
-        <service id="SgateShipFromStore\Components\ShopgateSdkRegistry">
+        <service id="SgateShipFromStore\Framework\ShopgateSdkRegistry">
             <argument type="service" id="sgate_ship_from_store.config.default" />
             <argument type="service" id="sgate_ship_from_store.config.per_shop" />
         </service>

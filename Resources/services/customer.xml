@@ -5,7 +5,7 @@
 
         <!-- CustomerSyncer -->
         <service id="SgateShipFromStore\Components\Customer\CustomerSyncer">
-            <argument type="service" id="SgateShipFromStore\Components\ShopgateSdkRegistry" />
+            <argument type="service" id="SgateShipFromStore\Framework\ShopgateSdkRegistry" />
             <argument type="service" id="models" />
             <argument type="service" id="SgateShipFromStore\Framework\ExceptionHandler" />
 

@@ -8,7 +8,6 @@ use Dustin\ImpEx\Sequence\RecordHandling;
 use Dustin\ImpEx\Sequence\Transferor;
 use Psr\Log\LoggerInterface;
 use SgateShipFromStore\Components\Order\Encapsulation\OrderStatusUpdate;
-use SgateShipFromStore\Components\Order\Exception\OrderNotFoundException;
 
 class OrderStatusUpdater implements RecordHandling
 {
@@ -61,13 +60,7 @@ class OrderStatusUpdater implements RecordHandling
             return;
         }
 
-        $orderId = $orderUpdate->getHeader(true)->get('orderId') ?? $this->getOrderId($orderUpdate);
-
-        if ($orderId === null) {
-            throw new OrderNotFoundException($orderUpdate->getOrderNumber());
-        }
-
-        $this->orderService->setOrderStatus($orderId, $statusId, true);
+        $this->orderService->setOrderStatus($orderUpdate->getOrderId(), $statusId, true);
     }
 
     private function getStatusId(string $status): ?int
@@ -76,13 +69,5 @@ class OrderStatusUpdater implements RecordHandling
         $id = $this->config->get($field);
 
         return $id !== null ? (int) $id : null;
-    }
-
-    private function getOrderId(OrderNumberInterface $orderNumber): ?int
-    {
-        $id = $this->connection->executeQuery('SELECT `id` FROM `s_order` WHERE `ordernumber` = :orderNumber', ['orderNumber' => $orderNumber->getOrderNumber()])
-            ->fetch(\PDO::FETCH_COLUMN);
-
-        return $id ? $id : null;
     }
 }

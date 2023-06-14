@@ -9,6 +9,11 @@
             <argument type="service" id="sgate_ship_from_store.date_time_converter" />
         </service>
 
+        <!-- OrderRelationNormalizer -->
+        <service id="SgateShipFromStore\Components\Order\Serializer\OrderRelationNormalizer" public="true">
+            <argument type="string">%sgate_ship_from_store.meta_file%</argument>
+        </service>
+
         <!-- OrderStatusUpdateNormalizer -->
         <service id="SgateShipFromStore\Components\Order\Serializer\OrderStatusUpdateNormalizer" public="true">
             <argument type="string">%sgate_ship_from_store.meta_file%</argument>
@@ -33,7 +38,7 @@
         <service id="SgateShipFromStore\Components\Order\OrderSyncer">
             <argument type="service" id="SgateShipFromStore\Components\Order\Serializer\OrderNormalizer" />
             <argument type="service" id="SgateShipFromStore\Components\Order\Serializer\OrderNormalizer" />
-            <argument type="service" id="SgateShipFromStore\Components\ShopgateSdkRegistry" />
+            <argument type="service" id="SgateShipFromStore\Framework\ShopgateSdkRegistry" />
             <argument type="service" id="SgateShipFromStore\Framework\Logger" />
             <argument type="service" id="models" />
             <argument type="service" id="SgateShipFromStore\Framework\ExceptionHandler" />
@@ -46,6 +51,14 @@
             <argument type="service" id="SgateShipFromStore\Framework\Sequence\Task\RecordHandlingTaskFactory" />
             
             <tag name="shopware.event_subscriber" />
+        </service>
+
+        <!-- OrderRelationEnricher -->
+        <service id="SgateShipFromStore\Components\Order\OrderRelationEnricher">
+            <argument type="service" id="dbal_connection" />
+            <argument type="service" id="SgateShipFromStore\Framework\Logger" />
+
+            <tag name="impex.handling" sequence="sgate_order_update" priority="900" />
         </service>
 
         <!-- OrderStatusUpdater -->
