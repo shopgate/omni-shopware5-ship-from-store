@@ -8,6 +8,8 @@ class ComposerStaticInit47fe998ef02fcdc3ba740c4316dcb999
 {
     public static $files = array (
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
+        'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
+        '25072dd6e2470089de65ae7bf11d3109' => __DIR__ . '/..' . '/symfony/polyfill-php72/bootstrap.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -17,11 +19,16 @@ class ComposerStaticInit47fe998ef02fcdc3ba740c4316dcb999
         ),
         'S' => 
         array (
+            'Symfony\\Polyfill\\Php72\\' => 23,
             'Symfony\\Polyfill\\Ctype\\' => 23,
             'Symfony\\Component\\Yaml\\' => 23,
             'Symfony\\Component\\Serializer\\' => 29,
             'Shopgate\\ConnectSdk\\Tests\\' => 26,
             'Shopgate\\ConnectSdk\\' => 20,
+        ),
+        'G' => 
+        array (
+            'GuzzleHttp\\Psr7\\' => 16,
         ),
         'D' => 
         array (
@@ -36,6 +43,10 @@ class ComposerStaticInit47fe998ef02fcdc3ba740c4316dcb999
         'kamermans\\OAuth2\\' => 
         array (
             0 => __DIR__ . '/..' . '/kamermans/guzzle-oauth2-subscriber/src',
+        ),
+        'Symfony\\Polyfill\\Php72\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-php72',
         ),
         'Symfony\\Polyfill\\Ctype\\' => 
         array (
@@ -56,6 +67,10 @@ class ComposerStaticInit47fe998ef02fcdc3ba740c4316dcb999
         'Shopgate\\ConnectSdk\\' => 
         array (
             0 => __DIR__ . '/..' . '/shopgate/connect-integration-sdk-php/src',
+        ),
+        'GuzzleHttp\\Psr7\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/guzzlehttp/psr7/src',
         ),
         'Dustin\\ImpEx\\' => 
         array (
