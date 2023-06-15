@@ -7,11 +7,13 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'kamermans\\OAuth2\\' => array($vendorDir . '/kamermans/guzzle-oauth2-subscriber/src'),
+    'Symfony\\Polyfill\\Php72\\' => array($vendorDir . '/symfony/polyfill-php72'),
     'Symfony\\Polyfill\\Ctype\\' => array($vendorDir . '/symfony/polyfill-ctype'),
     'Symfony\\Component\\Yaml\\' => array($vendorDir . '/symfony/yaml'),
     'Symfony\\Component\\Serializer\\' => array($vendorDir . '/symfony/serializer'),
     'Shopgate\\ConnectSdk\\Tests\\' => array($vendorDir . '/shopgate/connect-integration-sdk-php/tests'),
     'Shopgate\\ConnectSdk\\' => array($vendorDir . '/shopgate/connect-integration-sdk-php/src'),
+    'GuzzleHttp\\Psr7\\' => array($vendorDir . '/guzzlehttp/psr7/src'),
     'Dustin\\ImpEx\\' => array($vendorDir . '/dustin/impex/src'),
     'Dustin\\Encapsulation\\' => array($vendorDir . '/dustin/encapsulation/src'),
     'Dto\\' => array($vendorDir . '/rekhyt/dto/src'),
