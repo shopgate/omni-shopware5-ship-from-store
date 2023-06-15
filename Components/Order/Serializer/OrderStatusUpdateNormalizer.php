@@ -3,9 +3,8 @@
 namespace SgateShipFromStore\Components\Order\Serializer;
 
 use SgateShipFromStore\Components\Order\Encapsulation\OrderStatusUpdate;
-use SgateShipFromStore\Framework\Serializer\EncapsulationNormalizer;
 
-class OrderStatusUpdateNormalizer extends EncapsulationNormalizer
+class OrderStatusUpdateNormalizer extends OrderRelationNormalizer
 {
     public function getEncapsulationClass(): ?string
     {

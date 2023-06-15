@@ -8,9 +8,9 @@ use Dustin\ImpEx\Serializer\Converter\DateTime\DateTimeConverter;
 use Dustin\ImpEx\Util\Type;
 use SgateShipFromStore\Components\Article\Encapsulation\StockIdentifier;
 use SgateShipFromStore\Components\Shop\ShopIterator;
-use SgateShipFromStore\Components\ShopgateSdkRegistry;
 use SgateShipFromStore\Framework\ExceptionHandler;
 use SgateShipFromStore\Framework\Reader\Reader;
+use SgateShipFromStore\Framework\ShopgateSdkRegistry;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 class InventoryReader extends Reader

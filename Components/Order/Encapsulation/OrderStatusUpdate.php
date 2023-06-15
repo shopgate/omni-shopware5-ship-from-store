@@ -2,20 +2,12 @@
 
 namespace SgateShipFromStore\Components\Order\Encapsulation;
 
-use Dustin\ImpEx\Encapsulation\Record;
-use SgateShipFromStore\Components\Order\OrderNumberInterface;
 use SgateShipFromStore\Components\Order\OrderStatus;
-use SgateShipFromStore\Framework\ValidatableInterface;
 use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-class OrderStatusUpdate extends Record implements ValidatableInterface, OrderNumberInterface
+class OrderStatusUpdate extends OrderRelation
 {
-    /**
-     * @var string
-     */
-    protected $salesOrderNumber;
-
     /**
      * @var string
      */
@@ -23,14 +15,9 @@ class OrderStatusUpdate extends Record implements ValidatableInterface, OrderNum
 
     public function getConstraints(): array
     {
-        return [
-            'salesOrderNumber' => [new NotBlank()],
-            'newStatus' => [new NotBlank(), new Choice(['choices' => OrderStatus::getAll()])],
-        ];
-    }
+        $constraints = parent::getConstraints();
+        $constraints['newStatus'] = [new NotBlank(), new Choice(['choices' => OrderStatus::getAll()])];
 
-    public function getOrderNumber(): string
-    {
-        return $this->salesOrderNumber;
+        return $constraints;
     }
 }

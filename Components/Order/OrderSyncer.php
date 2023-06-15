@@ -8,7 +8,7 @@ use SgateShipFromStore\Components\Order\Encapsulation\Order;
 use SgateShipFromStore\Components\Order\Encapsulation\OrderContainer;
 use SgateShipFromStore\Components\Order\Serializer\OrderNormalizer;
 use SgateShipFromStore\Components\Order\Task\CreateShopgateOrdersTask;
-use SgateShipFromStore\Components\ShopgateSdkRegistry;
+use SgateShipFromStore\Framework\ShopgateSdkRegistry;
 use SgateShipFromStore\Framework\Exception\ApiErrorException;
 use SgateShipFromStore\Framework\ExceptionHandler;
 use SgateShipFromStore\Framework\Sequence\InlineRecordHandling;
