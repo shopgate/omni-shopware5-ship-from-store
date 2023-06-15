@@ -2,6 +2,8 @@
 
 namespace SgateShipFromStore\Framework\Util;
 
+use Dustin\Encapsulation\EncapsulationInterface;
+
 class ArrayUtil
 {
     public static function flatToNested(array $data): array
@@ -36,7 +38,7 @@ class ArrayUtil
         return $nested;
     }
 
-    public static function extract(string $prefix, array $data): array
+    public static function extractFromFlat(string $prefix, array $data): array
     {
         $prefix = trim($prefix, '.').'.';
 
@@ -50,6 +52,28 @@ class ArrayUtil
         }
 
         return $extract;
+    }
+
+    public static function extractFromNested(string $path, array $data)
+    {
+        $pointer = $data;
+
+        foreach (explode('.', $path) as $field) {
+            if (is_object($pointer) && $pointer instanceof EncapsulationInterface) {
+                $pointer = $pointer->get($field);
+
+                continue;
+            }
+
+            if (is_numeric($field)) {
+                $field = (int) $field;
+            }
+
+            $pointer = (array) $pointer;
+            $pointer = $pointer[$field] ?? null;
+        }
+
+        return $pointer;
     }
 
     private static function isNestedKey(string $key): bool
