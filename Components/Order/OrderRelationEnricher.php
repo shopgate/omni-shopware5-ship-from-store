@@ -65,8 +65,9 @@ class OrderRelationEnricher extends Filter
     {
         $sql = 'SELECT `order`.`id`, `order`.`language` as `shopId`, `customer`.`email`
             FROM `s_order` `order`
+            LEFT JOIN `s_order_attributes` `orderAttribute` ON `order`.`id` = `orderAttribute`.`orderID`
             LEFT JOIN `s_user` `customer` ON `order`.`userID` = `customer`.`id`
-            WHERE `order`.`ordernumber` = :orderNumber';
+            WHERE `orderAttribute`.`sgate_ship_from_store_order_number` = :orderNumber';
 
         $data = $this->connection->fetchAssociative($sql, ['orderNumber' => $record->getSalesOrderNumber()]);
 
