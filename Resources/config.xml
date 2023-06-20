@@ -192,8 +192,8 @@
         <!-- newStatus -->
         <element type="combo">
             <name>newStatusId</name>
-            <label lang="de">Bestellstatus "neu"</label>
-            <label lang="en">Order status "new"</label>
+            <label lang="de">Neu</label>
+            <label lang="en">New</label>
             <store>Shopware.apps.Base.store.OrderStatus</store>
             <options>
                 <multiSelect>false</multiSelect>
@@ -206,78 +206,8 @@
         <!-- openStatus -->
         <element type="combo">
             <name>openStatusId</name>
-            <label lang="de">Bestellstatus "offen"</label>
-            <label lang="en">Order status "open"</label>
-            <store>Shopware.apps.Base.store.OrderStatus</store>
-            <options>
-                <multiSelect>false</multiSelect>
-                <valueField>id</valueField>
-                <displayField>description</displayField>
-                <isCustomStore>true</isCustomStore>
-            </options>
-        </element>
-
-        <!-- rejectedStatus -->
-        <element type="combo">
-            <name>rejectedStatusId</name>
-            <label lang="de">Bestellstatus "Abgelehnt"</label>
-            <label lang="en">Order status "rejected"</label>
-            <store>Shopware.apps.Base.store.OrderStatus</store>
-            <options>
-                <multiSelect>false</multiSelect>
-                <valueField>id</valueField>
-                <displayField>description</displayField>
-                <isCustomStore>true</isCustomStore>
-            </options>
-        </element>
-
-        <!-- canceledStatus -->
-        <element type="combo">
-            <name>canceledStatusId</name>
-            <label lang="de">Bestellstatus "Abgebrochen"</label>
-            <label lang="en">Order status "canceled"</label>
-            <store>Shopware.apps.Base.store.OrderStatus</store>
-            <options>
-                <multiSelect>false</multiSelect>
-                <valueField>id</valueField>
-                <displayField>description</displayField>
-                <isCustomStore>true</isCustomStore>
-            </options>
-        </element>
-
-        <!-- readyStatus -->
-        <element type="combo">
-            <name>readyStatusId</name>
-            <label lang="de">Bestellstatus "bereit"</label>
-            <label lang="en">Order status "ready"</label>
-            <store>Shopware.apps.Base.store.OrderStatus</store>
-            <options>
-                <multiSelect>false</multiSelect>
-                <valueField>id</valueField>
-                <displayField>description</displayField>
-                <isCustomStore>true</isCustomStore>
-            </options>
-        </element>
-
-        <!-- fulfilledStatus -->
-        <element type="combo">
-            <name>fulfilledStatusId</name>
-            <label lang="de">Bestellstatus "erfüllt"</label>
-            <label lang="en">Order status "fulfilled"</label>
-            <store>Shopware.apps.Base.store.OrderStatus</store>
-            <options>
-                <multiSelect>false</multiSelect>
-                <valueField>id</valueField>
-                <displayField>description</displayField>
-                <isCustomStore>true</isCustomStore>
-            </options>
-        </element>
-
-        <!-- completedStatus -->
-        <element type="combo">
-            <name>completedStatusId</name>
-            <label lang="de">Bestellstatus "komplett abgeschlossen"</label>
-            <label lang="en">Order status "completed"</label>
+            <label lang="de">Offen</label>
+            <label lang="en">Open</label>
             <store>Shopware.apps.Base.store.OrderStatus</store>
             <options>
                 <multiSelect>false</multiSelect>
@@ -290,8 +220,78 @@
         <!-- inProgressStatus -->
         <element type="combo">
             <name>inProgressStatusId</name>
-            <label lang="de">Bestellstatus "in Bearbeitung"</label>
-            <label lang="en">Order status "in progress"</label>
+            <label lang="de">In Bearbeitung</label>
+            <label lang="en">In Progress</label>
+            <store>Shopware.apps.Base.store.OrderStatus</store>
+            <options>
+                <multiSelect>false</multiSelect>
+                <valueField>id</valueField>
+                <displayField>description</displayField>
+                <isCustomStore>true</isCustomStore>
+            </options>
+        </element>
+
+        <!-- readyStatus -->
+        <element type="combo">
+            <name>readyStatusId</name>
+            <label lang="de">Bereit</label>
+            <label lang="en">Ready</label>
+            <store>Shopware.apps.Base.store.OrderStatus</store>
+            <options>
+                <multiSelect>false</multiSelect>
+                <valueField>id</valueField>
+                <displayField>description</displayField>
+                <isCustomStore>true</isCustomStore>
+            </options>
+        </element>
+
+        <!-- fulfilledStatus -->
+        <element type="combo">
+            <name>fulfilledStatusId</name>
+            <label lang="de">Ausgeführt</label>
+            <label lang="en">Fulfilled</label>
+            <store>Shopware.apps.Base.store.OrderStatus</store>
+            <options>
+                <multiSelect>false</multiSelect>
+                <valueField>id</valueField>
+                <displayField>description</displayField>
+                <isCustomStore>true</isCustomStore>
+            </options>
+        </element>
+
+        <!-- completedStatus -->
+        <element type="combo">
+            <name>completedStatusId</name>
+            <label lang="de">Abgeschlossen</label>
+            <label lang="en">Completed</label>
+            <store>Shopware.apps.Base.store.OrderStatus</store>
+            <options>
+                <multiSelect>false</multiSelect>
+                <valueField>id</valueField>
+                <displayField>description</displayField>
+                <isCustomStore>true</isCustomStore>
+            </options>
+        </element>
+
+        <!-- canceledStatus -->
+        <element type="combo">
+            <name>canceledStatusId</name>
+            <label lang="de">Storniert</label>
+            <label lang="en">Canceled</label>
+            <store>Shopware.apps.Base.store.OrderStatus</store>
+            <options>
+                <multiSelect>false</multiSelect>
+                <valueField>id</valueField>
+                <displayField>description</displayField>
+                <isCustomStore>true</isCustomStore>
+            </options>
+        </element>
+
+        <!-- rejectedStatus -->
+        <element type="combo">
+            <name>rejectedStatusId</name>
+            <label lang="de">Abgelehnt</label>
+            <label lang="en">Rejected</label>
             <store>Shopware.apps.Base.store.OrderStatus</store>
             <options>
                 <multiSelect>false</multiSelect>

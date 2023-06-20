@@ -13,6 +13,8 @@ Click "Install" and "Activate" to activate the plugin.
 
 Make sure Shopware cronjobs are beeing processed regularly otherwise orders won't be exported to Shopgate and cumulated inventories won't be imported. See how to setup cronjobs for Shopware: [System: Cronjobs](https://docs.shopware.com/de/shopware-5-de/einstellungen/system-cronjobs#cronjob-einrichten)
 
+For order status updates you have to subscribe to the Shopgate "salesOrderStatusUpdated" event. You can find the complete webhook url in the plugin configuration in Shopware backend.
+
 ## Configuration
 Take care of the plugin configuration. Otherwise some processes will end up in misbehavior.
 
