@@ -3,6 +3,7 @@
 use SgateShipFromStore\Components\Order\Encapsulation\OrderStatusUpdate;
 use SgateShipFromStore\Components\Order\Serializer\OrderStatusUpdateNormalizer;
 use SgateShipFromStore\Framework\Encapsulation\RequestData;
+use SgateShipFromStore\Framework\Logger;
 use SgateShipFromStore\Framework\Sequence\ArrayTransferor;
 use SgateShipFromStore\Framework\Sequence\Task\RecordHandlingTaskFactory;
 use SgateShipFromStore\Framework\Sequence\Validator;
@@ -15,8 +16,12 @@ class Shopware_Controllers_Api_SgateShipFromStoreUpdateOrder extends Shopware_Co
 {
     public function indexAction()
     {
+        $logger = $this->container->get(Logger::class);
+
         $validator = $this->container->get(Validator::class);
         $data = $this->createRequestData($this->Request());
+
+        $logger->error('Incoming order update request: '.json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 
         $validator->validate($data);
 
