@@ -70,5 +70,12 @@
             <tag name="impex.handling" sequence="sgate_order_update" priority="500" />
         </service>
 
+        <!-- BackendOrderSubscriber -->
+        <service id="SgateShipFromStore\Components\Order\Subscriber\BackendOrderSubscriber">
+            <argument type="service" id="dbal_connection" />
+
+            <tag name="shopware.event_subscriber" />
+        </service>
+
     </services>
 </container>
