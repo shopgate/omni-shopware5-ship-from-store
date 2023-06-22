@@ -6,7 +6,7 @@ Ext.define('Shopware.apps.SgateOrder.view.detail.Overview', {
     initComponent: function() {
         var me = this;
 
-        me.snippets.details.sgateShipFromStoreOrderNumber = '{s name="overview/details/sgateShipFromStoreOrderNumber"}Shopgate Bestellung{/s}'
+        me.snippets.details.sgateShipFromStoreOrderNumber = '{s name="overview/details/sgateShipFromStoreOrderNumber"}Shopgate Bestellung{/s}';
         me.callParent(arguments);
 
     },
@@ -18,20 +18,18 @@ Ext.define('Shopware.apps.SgateOrder.view.detail.Overview', {
         elements.splice(
             elements.length - 1,
             0,
-            { name: 'sgateShipFromStoreOrderNumber', fieldLabel: me.snippets.details.sgateShipFromStoreOrderNumber, allowHtml: true, renderer: me.renderShopgateLink }
+            { name: 'sgateShipFromStoreLink', fieldLabel: me.snippets.details.sgateShipFromStoreOrderNumber, allowHtml: true, renderer: me.renderShopgateLink }
         );
-
-        console.log(elements);
 
         return elements;
     },
 
     renderShopgateLink: function(value) {
         if(value) {
-            return Ext.String.format('<a target="_blank" href="myurl[0]">Shopgate</a>', value);
+            return Ext.String.format('<a target="_blank" href="[0]">'+'{s name="overview/details/sgateShipFromStoreLink"}Zu Shopgate{/s}'+'</a>', value);
         }
 
-        return null;
+        return '{s name="overview/details/sgateShipFromStoreLinkNotAvailable"}Nicht verfügbar{/s}';
     }
 });
 //{/block}

@@ -3,6 +3,7 @@
 namespace SgateShipFromStore\Components\Order\Subscriber;
 
 use Doctrine\DBAL\Connection;
+use Dustin\Encapsulation\ArrayEncapsulation;
 use Enlight\Event\SubscriberInterface;
 
 class BackendOrderSubscriber implements SubscriberInterface
@@ -12,9 +13,17 @@ class BackendOrderSubscriber implements SubscriberInterface
      */
     private $connection;
 
-    public function __construct(Connection $connection)
-    {
+    /**
+     * @var ArrayEncapsulation
+     */
+    private $config;
+
+    public function __construct(
+        Connection $connection,
+        ArrayEncapsulation $config
+    ) {
         $this->connection = $connection;
+        $this->config = $config;
     }
 
     public static function getSubscribedEvents()
@@ -56,7 +65,13 @@ class BackendOrderSubscriber implements SubscriberInterface
         $sgateOrderNumbers = $this->fetchSgateOrderNumbers(array_unique(array_column($orders, 'id')));
 
         foreach ($orders as &$order) {
-            $order['sgateShipFromStoreOrderNumber'] = $sgateOrderNumbers[$order['id']] ?? null;
+            $config = $this->config->get($order['languageSubShop']['id']);
+
+            if ($config->get('env') === 'staging' || empty($config->get('merchantCode')) || empty($sgateOrderNumbers[$order['id']])) {
+                $order['sgateShipFromStoreLink'] = null;
+            } else {
+                $order['sgateShipFromStoreLink'] = sprintf('https://next.admin.shopgate.com/app/%s/sales/orders/%s', $config->get('merchantCode'), $sgateOrderNumbers[$order['id']]);
+            }
         }
 
         $view->assign('data', $orders);
