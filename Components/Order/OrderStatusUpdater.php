@@ -60,6 +60,7 @@ class OrderStatusUpdater implements RecordHandling
             return;
         }
 
+        $this->logger->error(sprintf('Set status of order %s to %s.', $orderUpdate->getOrderId(), $statusId));
         $this->orderService->setOrderStatus($orderUpdate->getOrderId(), $statusId, true);
     }
 

@@ -70,11 +70,17 @@ class InventoryReader extends Reader
 
         foreach ($this->shopIterator as $shop) {
             $shopId = $shop->get('id');
-            $filter = $this->buildFilter($shopId);
+            $filters = $this->buildFilters($shopId);
             $catalogService = $this->shopgateSdkRegistry->getShopgateSdk($shopId)->getCatalogService();
 
+            $params = [];
+
+            if ($filters !== null) {
+                $params['filters'] = $filters;
+            }
+
             try {
-                $result = $catalogService->getCumulatedInventories(['filters' => $filter]);
+                $result = $catalogService->getCumulatedInventories($params);
             } catch (\Throwable $th) {
                 $this->exceptionHandler->handle($th, $shopId);
 
@@ -121,9 +127,14 @@ class InventoryReader extends Reader
         return $inventories['productInventories'][0] ?? null;
     }
 
-    private function buildFilter(int $shopId): array
+    private function buildFilters(int $shopId): ?array
     {
         $interval = (int) $this->config->get($shopId)->get('stockUpdateInterval');
+
+        if ($interval === 0) {
+            return null;
+        }
+
         $dateTime = date_create('@'.strtotime('-'.$interval.' minutes'));
 
         $dateTime = $this->dateTimeConverter->normalize($dateTime, new Encapsulation(), '', '');
