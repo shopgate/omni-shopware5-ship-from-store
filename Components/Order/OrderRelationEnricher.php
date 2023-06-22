@@ -40,7 +40,7 @@ class OrderRelationEnricher extends Filter
         try {
             $this->enrichOrderData($record);
         } catch (OrderNotFoundException $exception) {
-            $this->logger->notice(sprintf('Id for order number %s was not found.', $record->getSalesOrderNumber()));
+            $this->logger->error(sprintf('Id for order number %s was not found.', $record->getSalesOrderNumber()));
 
             return !$this->filter;
         }
