@@ -4,6 +4,7 @@ use SgateShipFromStore\Components\Order\Encapsulation\OrderStatusUpdate;
 use SgateShipFromStore\Components\Order\Serializer\OrderStatusUpdateNormalizer;
 use SgateShipFromStore\Framework\Controller\Api\ApiController;
 use SgateShipFromStore\Framework\Encapsulation\RequestData;
+use SgateShipFromStore\Framework\Logger;
 use SgateShipFromStore\Framework\Sequence\ArrayTransferor;
 use SgateShipFromStore\Framework\Sequence\Task\RecordHandlingTaskFactory;
 use SgateShipFromStore\Framework\Sequence\Validator;
@@ -16,6 +17,8 @@ class Shopware_Controllers_Api_SgateShipFromStoreUpdateOrder extends ApiControll
 {
     public function indexAction()
     {
+        $this->container->get(Logger::class)->error('Incoming request');
+
         $validator = $this->container->get(Validator::class);
         $data = $this->createRequestData($this->Request());
 
