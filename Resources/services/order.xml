@@ -65,7 +65,6 @@
         <service id="SgateShipFromStore\Components\Order\OrderStatusUpdater">
             <argument type="service" id="sgate_ship_from_store.config.default" />
             <argument type="service" id="SgateShipFromStore\Framework\Logger" />
-            <argument type="service" id="dbal_connection" />
 
             <tag name="impex.handling" sequence="sgate_order_update" priority="500" />
         </service>
