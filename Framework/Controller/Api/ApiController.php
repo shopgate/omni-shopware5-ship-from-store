@@ -6,7 +6,7 @@ use Shopware\Components\Api\Exception\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class ApiController extends \Shopware_Controllers_Api_Rest
+abstract class ApiController extends \Shopware_Controllers_Api_Rest
 {
     public function dispatch($action)
     {
