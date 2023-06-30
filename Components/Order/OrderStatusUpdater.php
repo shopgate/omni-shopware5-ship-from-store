@@ -33,12 +33,10 @@ class OrderStatusUpdater implements RecordHandling
 
     public function __construct(
         ArrayEncapsulation $config,
-        LoggerInterface $logger,
-        Connection $connection
+        LoggerInterface $logger
     ) {
         $this->config = $config;
         $this->logger = $logger;
-        $this->connection = $connection;
         $this->orderService = Shopware()->Modules()->Order();
     }
 
