@@ -5,8 +5,10 @@ namespace SgateShipFromStore\Components\Customer;
 use Doctrine\ORM\EntityRepository;
 use Dustin\Encapsulation\Container;
 use Dustin\Encapsulation\Encapsulation;
+use Psr\Log\LoggerInterface;
 use SgateShipFromStore\Components\Customer\Encapsulation\Customer;
 use SgateShipFromStore\Components\Customer\Encapsulation\CustomerContainer;
+use SgateShipFromStore\Components\Customer\Task\CreateShopgateCustomersTask;
 use SgateShipFromStore\Framework\ShopgateSdkRegistry;
 use SgateShipFromStore\Framework\ExceptionHandler;
 use SgateShipFromStore\Framework\Sequence\InlineRecordHandling;
@@ -36,15 +38,22 @@ class CustomerSyncer extends InlineRecordHandling
      */
     private $customerRepository;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(
         ShopgateSdkRegistry $shopgateSdkRegistry,
         ModelManager $modelManager,
-        ExceptionHandler $exceptionHandler
+        ExceptionHandler $exceptionHandler,
+        LoggerInterface $logger
     ) {
         $this->shopgateSdkRegistry = $shopgateSdkRegistry;
         $this->modelManager = $modelManager;
         $this->exceptionHandler = $exceptionHandler;
         $this->customerRepository = $modelManager->getRepository(CustomerEntity::class);
+        $this->logger = $logger;
     }
 
     public function syncCustomers(CustomerContainer $customers, int $shopId): void
@@ -112,9 +121,10 @@ class CustomerSyncer extends InlineRecordHandling
         })->toArray();
 
         $customerService = $this->shopgateSdkRegistry->getShopgateSdk($shopId)->getCustomerService();
+        $task = new CreateShopgateCustomersTask($data, $customerService, $this->logger);
 
         try {
-            $result = $customerService->addCustomers($data, [], false);
+            $result = (array) $task->retry();
         } catch (\Throwable $th) {
             $this->exceptionHandler->handle($th, $shopId);
         }
