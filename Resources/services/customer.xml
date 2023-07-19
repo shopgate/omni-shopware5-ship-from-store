@@ -8,6 +8,7 @@
             <argument type="service" id="SgateShipFromStore\Framework\ShopgateSdkRegistry" />
             <argument type="service" id="models" />
             <argument type="service" id="SgateShipFromStore\Framework\ExceptionHandler" />
+            <argument type="service" id="SgateShipFromStore\Framework\Logger" />
 
             <tag name="impex.handling" sequence="sgate_order_export" priority="500" />
         </service>
