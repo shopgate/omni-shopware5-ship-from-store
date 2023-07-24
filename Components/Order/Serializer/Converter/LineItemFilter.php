@@ -16,7 +16,7 @@ class LineItemFilter
 
     public function __invoke($lineItem): bool
     {
-        return \in_array($this->getType($lineItem), $this->types);
+        return \in_array((int)$this->getType($lineItem), $this->types, true);
     }
 
     protected function getType($lineItem): string

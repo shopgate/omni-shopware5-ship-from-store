@@ -7,6 +7,7 @@ use Dustin\ImpEx\Serializer\Converter\Numeric\FloatConverter;
 use Dustin\ImpEx\Serializer\Converter\Numeric\IntConverter;
 use SgateShipFromStore\Components\Order\Encapsulation\Product;
 use SgateShipFromStore\Framework\Serializer\EncapsulationNormalizer;
+use SgateShipFromStore\Components\Order\Encapsulation\LineItem;
 
 class LineItemNormalizer extends EncapsulationNormalizer
 {
