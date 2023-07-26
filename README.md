@@ -15,6 +15,8 @@ Make sure Shopware cronjobs are beeing processed regularly otherwise orders won'
 
 For order status updates you have to subscribe to the Shopgate "salesOrderStatusUpdated" event. You can find the complete webhook url in the plugin configuration in Shopware backend.
 
+You need a Shopware API user, which you have to set up in the Shopgate Administration, right where the Webhook is configured.
+
 ## Configuration
 Take care of the plugin configuration. Otherwise some processes will end up in misbehavior.
 
@@ -30,4 +32,3 @@ You will get your API credentials from Shopgate.
 
 **Order state mapping**
 Map each Shopgate order state with a Shopware order state. This mapping will be used for order status updates.
-
