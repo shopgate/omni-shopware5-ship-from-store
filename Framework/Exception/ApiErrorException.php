@@ -5,7 +5,7 @@ namespace SgateShipFromStore\Framework\Exception;
 use Dustin\Encapsulation\ArrayEncapsulation;
 use Dustin\Encapsulation\Encapsulation;
 
-class ApiErrorException extends \Exception
+final class ApiErrorException extends \Exception
 {
     private array $errors = [];
 

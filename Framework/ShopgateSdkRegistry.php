@@ -3,6 +3,7 @@
 namespace SgateShipFromStore\Framework;
 
 use Dustin\Encapsulation\ArrayEncapsulation;
+use Dustin\Encapsulation\Encapsulation;
 use Shopgate\ConnectSdk\ShopgateSdk;
 
 class ShopgateSdkRegistry
@@ -43,7 +44,7 @@ class ShopgateSdkRegistry
 
     protected function build(?int $shopId = null): ShopgateSdk
     {
-        $config = $shopId === null ? $this->defaultConfig : ($this->configPerShop[$shopId] ?? new ArrayEncapsulation());
+        $config = $shopId === null ? $this->defaultConfig : ($this->configPerShop[$shopId] ?? new Encapsulation());
         $configData = $config->getList(array_merge(ShopgateSdk::REQUIRED_CONFIG_FIELDS, ['env']));
 
         return new ShopgateSdk($configData);
