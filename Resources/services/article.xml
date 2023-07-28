@@ -2,13 +2,13 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        
+
         <!-- InventoryNormalizer -->
         <service id="SgateShipFromStore\Components\Article\Serializer\InventoryNormalizer">
             <argument type="string">%sgate_ship_from_store.meta_file%</argument>
         </service>
 
-        <!-- InventoryReader -->        
+        <!-- InventoryReader -->
         <service id="SgateShipFromStore\Components\Article\InventoryReader">
             <argument type="service" id="SgateShipFromStore\Components\Article\Serializer\InventoryNormalizer" />
             <argument type="service" id="SgateShipFromStore\Framework\ShopgateSdkRegistry" />
@@ -37,6 +37,7 @@
         <service id="SgateShipFromStore\Components\Article\StockUpdater">
             <argument type="service" id="models" />
             <argument type="service" id="sgate_ship_from_store.config.per_shop" />
+            <argument type="service" id="SgateShipFromStore\Framework\Logger" />
 
             <tag name="impex.handling" sequence="sgate_inventory_import" priority="100" />
         </service>
@@ -44,7 +45,7 @@
         <!-- StockImportSubscriber -->
         <service id="SgateShipFromStore\Components\Article\Subscriber\StockImportSubscriber">
             <argument type="service" id="SgateShipFromStore\Framework\Sequence\Task\RecordHandlingTaskFactory" />
-            
+
             <tag name="shopware.event_subscriber" />
         </service>
 
