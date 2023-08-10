@@ -193,6 +193,7 @@ class OrderReader extends DbalReader
                 '`line_item`.`modus` as `type`',
                 '`order`.`currency` as `currencyCode`',
                 '`media`.`path` as `product.mediaPath`',
+                '`variant_media`.`path` as `product.variantMediaPath`',
             ])
             ->from('`s_order_details`', '`line_item`')
             ->leftJoin('`line_item`', '`s_articles_prices`', '`article_price`', '`line_item`.`articleDetailID` = `article_price`.`articledetailsID`')
@@ -204,6 +205,11 @@ class OrderReader extends DbalReader
             ->leftJoin('`shop`', '`s_core_customergroups`', '`shop_customer_group`', '`shop`.`customer_group_id` = `shop_customer_group`.`id`')
             ->leftJoin('`article`', '`s_articles_img`', '`article_media`', '`article`.`id` = `article_media`.`articleID`')
             ->leftJoin('`article_media`', '`s_media`', '`media`', '`article_media`.`media_id` = `media`.`id`')
+            ->leftJoin('`article_detail`', '`s_article_configurator_option_relations`', '`article_option_relations`', '`article_detail`.`id` = `article_option_relations`.`article_id`')
+            ->leftJoin('`article_option_relations`', '`s_article_img_mapping_rules`', '`article_image_mapping_rules`', '`article_option_relations`.`option_id` = `article_image_mapping_rules`.`option_id`')
+            ->leftJoin('`article_image_mapping_rules`', '`s_article_img_mappings`', '`article_image_mappings`', '`article_image_mapping_rules`.`mapping_id` = `article_image_mappings`.`id`')
+            ->leftJoin('`article_image_mappings`', '`s_articles_img`', '`variant_article_media`', '`article_image_mappings`.`image_id` = `variant_article_media`.`id`')
+            ->leftJoin('`variant_article_media`', '`s_media`', '`variant_media`', '`variant_article_media`.`media_id` = `variant_media`.`id`')
             ->where('`line_item`.`orderID` = :orderId')
             ->andWhere('`article_price`.`pricegroup` = `shop_customer_group`.`groupkey` OR `line_item`.`modus` <> 0')
             ->andWhere('`article_price`.`from` = 1 OR `line_item`.`modus` <> 0')
@@ -218,7 +224,15 @@ class OrderReader extends DbalReader
             $lineItem['product']['code'] = $lineItem['product']['identifiers'][$config->get('productCode')];
             unset($lineItem['shopId']);
 
-            $mediaPath = $lineItem['product']['mediaPath'];
+            if (!empty($lineItem['product']['variantMediaPath']) &&
+                $lineItem['product']['variantMediaPath'] !== $lineItem['product']['mediaPath']
+            ) {
+                $mediaPath = $lineItem['product']['variantMediaPath'];
+
+            } else {
+                $mediaPath = $lineItem['product']['mediaPath'];
+            }
+
             $lineItem['product']['image'] = $mediaPath !== null ? $this->mediaService->getUrl($mediaPath) : null;
             unset($lineItem['product']['mediaPath']);
         }
