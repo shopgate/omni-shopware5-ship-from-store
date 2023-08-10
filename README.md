@@ -32,3 +32,11 @@ You will get your API credentials from Shopgate.
 
 **Order state mapping**
 Map each Shopgate order state with a Shopware order state. This mapping will be used for order status updates.
+
+## Commands
+Very helpful commands while coding:
+
+- Import from Shopgate to Shopware: `bin/console sgate:impex:start sgate_inventory_import`
+- Export from Shopware to Shopgate: `bin/console sgate:impex:start sgate_order_export`
+
+Running with different php versions: `/opt/homebrew/opt/php@7.4/bin/php bin/console sgate:impex:start sgate_order_export`
