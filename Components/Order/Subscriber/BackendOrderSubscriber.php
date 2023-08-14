@@ -67,13 +67,17 @@ class BackendOrderSubscriber implements SubscriberInterface
         foreach ($orders as &$order) {
             $config = $this->config->get($order['languageSubShop']['id']);
 
-            if ($config->get('env') === 'staging' || empty($config->get('merchantCode')) || empty($sgateOrderNumbers[$order['id']])) {
+            if (empty($sgateOrderNumbers[$order['id']])) {
                 $order['sgateShipFromStoreLink'] = null;
             } else {
-                $order['sgateShipFromStoreLink'] = sprintf('https://next.admin.shopgate.com/app/%s/sales/orders/%s', $config->get('merchantCode'), $sgateOrderNumbers[$order['id']]);
+                if ($config->get('env') === 'staging' || empty($config->get('merchantCode'))) {
+                    $order['sgateShipFromStoreLink'] = sprintf('https://next.admin.shopgatepg.com/app/%s/sales/orders/%s', $config->get('merchantCode'), $sgateOrderNumbers[$order['id']]);
+                } else {
+                    $order['sgateShipFromStoreLink'] = sprintf('https://next.admin.shopgate.com/app/%s/sales/orders/%s', $config->get('merchantCode'), $sgateOrderNumbers[$order['id']]);
+                }
             }
         }
-
+        
         $view->assign('data', $orders);
     }
 
