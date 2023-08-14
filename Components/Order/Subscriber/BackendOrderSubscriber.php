@@ -77,7 +77,7 @@ class BackendOrderSubscriber implements SubscriberInterface
                 }
             }
         }
-        
+
         $view->assign('data', $orders);
     }
 
