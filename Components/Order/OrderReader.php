@@ -46,13 +46,13 @@ class OrderReader extends DbalReader
         $orders = $this->connection->executeQuery($sql)->fetchAll();
 
         $orders = array_filter($orders, function (array $order) {
-            $statusId = $this->config->get($order['shopId'])->get('paymentStatusId');
+            $statusIds = $this->config->get($order['shopId'])->get('paymentStatusId');
 
-            if ($statusId === null) {
+            if (empty($statusIds)) {
                 return true;
             }
 
-            return (int) $order['paymentStatusId'] === (int) $statusId;
+            return in_array((int) $order['paymentStatusId'], $statusIds);
         });
 
         yield from array_column($orders, 'id');

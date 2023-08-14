@@ -57,7 +57,7 @@
             <description lang="en">Only orders with this payment status will be transferred.</description>
             <store>Shopware.apps.Base.store.PaymentStatus</store>
             <options>
-                <multiSelect>false</multiSelect>
+                <multiSelect>true</multiSelect>
                 <valueField>id</valueField>
                 <displayField>description</displayField>
                 <isCustomStore>true</isCustomStore>
