@@ -181,6 +181,14 @@ class AttributeHandler
                     'displayInBackend' => false,
                     'custom' => false,
                 ],
+            ], [
+                'table' => 's_user_attributes',
+                'name' => 'sgate_ship_from_store_customer_exported',
+                'type' => TypeMapping::TYPE_BOOLEAN,
+                'config' => [
+                    'displayInBackend' => false,
+                    'custom' => false,
+                ],
             ],
         ];
     }
@@ -209,6 +217,9 @@ class AttributeHandler
             ], [
                 'table' => 's_order_attributes',
                 'name' => 'sgate_ship_from_store_order_number',
+            ], [
+                'table' => 's_user_attributes',
+                'name' => 'sgate_ship_from_store_customer_exported',
             ],
         ];
     }

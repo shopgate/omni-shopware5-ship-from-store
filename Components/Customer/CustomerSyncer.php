@@ -145,6 +145,7 @@ class CustomerSyncer extends InlineRecordHandling
 
             $attribute->setCustomerId($id);
             $attribute->setSgateShipFromStoreCustomerNumber($customer->get('internalCustomerNumber'));
+            $attribute->setSgateShipFromStoreCustomerExported(true);
             $this->modelManager->persist($attribute);
         }
 
