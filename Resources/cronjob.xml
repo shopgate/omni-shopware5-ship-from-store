@@ -18,4 +18,12 @@
         <disableOnError>false</disableOnError>
     </cronjob>
 
+    <cronjob>
+        <name>Shopgate Kunden Email Export</name>
+        <action>Shopware_CronJob_SgateCustomerEmailExport</action>
+        <active>1</active>
+        <interval>900</interval>
+        <disableOnError>false</disableOnError>
+    </cronjob>
+
 </cronjobs>

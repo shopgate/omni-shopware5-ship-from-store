@@ -13,5 +13,42 @@
             <tag name="impex.handling" sequence="sgate_order_export" priority="500" />
         </service>
 
+        <!-- CustomerEmailSyncer -->
+        <service id="SgateShipFromStore\Components\Customer\CustomerEmailSyncer">
+            <argument type="service" id="SgateShipFromStore\Framework\ShopgateSdkRegistry" />
+            <argument type="service" id="models" />
+            <argument type="service" id="SgateShipFromStore\Framework\ExceptionHandler" />
+            <argument type="service" id="SgateShipFromStore\Framework\Logger" />
+
+            <tag name="impex.handling" sequence="sgate_customer_email_export" priority="500" />
+        </service>
+
+        <!-- CustomerEmailReader -->
+        <service id="SgateShipFromStore\Components\Customer\CustomerEmailReader">
+            <argument type="service" id="dbal_connection" />
+            <argument type="service" id="SgateShipFromStore\Components\Customer\Serializer\CustomerNormalizer" />
+            <argument type="service" id="sgate_ship_from_store.config.per_shop" />
+        </service>
+
+        <!-- CustomerEmailTransferor -->
+        <service id="sgate_ship_from_store.transferor.customer_email" class="SgateShipFromStore\Framework\Sequence\ReaderTransferor">
+            <argument type="service" id="SgateShipFromStore\Components\Customer\CustomerEmailReader" />
+
+            <tag name="impex.handling.transferor" sequence="sgate_customer_email_export" />
+        </service>
+
+        <!-- OrderNormalizer -->
+        <service id="SgateShipFromStore\Components\Customer\Serializer\CustomerNormalizer">
+            <argument type="string">%sgate_ship_from_store.meta_file%</argument>
+            <argument type="service" id="sgate_ship_from_store.date_time_converter" />
+        </service>
+
+        <!-- CustomerEmailExportSubscriber -->
+        <service id="SgateShipFromStore\Components\Customer\Subscriber\CustomerEmailExportSubscriber">
+            <argument type="service" id="SgateShipFromStore\Framework\Sequence\Task\RecordHandlingTaskFactory" />
+
+            <tag name="shopware.event_subscriber" />
+        </service>
+
     </services>
 </container>

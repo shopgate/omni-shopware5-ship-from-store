@@ -63,7 +63,8 @@ class SgateShipFromStore extends Plugin
     private function markAllOrdersExported()
     {
         $this->container->get('dbal_connection')->executeUpdate('
-            UPDATE `s_order_attributes` SET `sgate_ship_from_store_exported` = 1
+            UPDATE `s_order_attributes` SET `sgate_ship_from_store_exported` = 1;
+            UPDATE `s_user_attributes` SET `sgate_ship_from_store_customer_exported` = 1;
         ');
     }
 }

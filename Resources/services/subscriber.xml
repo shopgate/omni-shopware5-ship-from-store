@@ -18,5 +18,10 @@
             <tag name="shopware.event_subscriber" />
         </service>
 
+        <!-- CustomerModelSubscriber -->
+        <service id="sgate_ship_from_store.subscriber.customer_model_subscriber" class="SgateShipFromStore\Subscriber\CustomerModelSubscriber">
+            <tag name="doctrine.event_subscriber"/>
+        </service>
+
     </services>
 </container>
