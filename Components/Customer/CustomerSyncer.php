@@ -131,8 +131,11 @@ class CustomerSyncer extends InlineRecordHandling
 
         $ids = $result['ids'] ?? [];
 
-        foreach ($ids as $index => $id) {
-            $customers->getAt($index)->set('id', $id);
+        if (!empty($result) && !empty($result['internalCustomerNumbers'])) {
+            foreach ($ids as $index => $id) {
+                $customers->getAt($index)->set('id', $id);
+                $customers->getAt($index)->set('internalCustomerNumber', $result['internalCustomerNumbers'][$index]);
+            }
         }
     }
 
