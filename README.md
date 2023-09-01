@@ -38,5 +38,6 @@ Very helpful commands while coding:
 
 - Import from Shopgate to Shopware: `bin/console sgate:impex:start sgate_inventory_import`
 - Export from Shopware to Shopgate: `bin/console sgate:impex:start sgate_order_export`
+- Export from Shopware to Shopgate: `bin/console sgate:impex:start sgate_customer_email_export`
 
 Running with different php versions: `/opt/homebrew/opt/php@7.4/bin/php bin/console sgate:impex:start sgate_order_export`
