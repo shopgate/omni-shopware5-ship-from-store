@@ -81,7 +81,7 @@ class Order extends Record implements ShopIdInterface, CustomerExtractionInterfa
      */
     protected $domain;
 
-    protected bool $imported = true;
+    protected bool $imported = false;
 
     /**
      * @var float
