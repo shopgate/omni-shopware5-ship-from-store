@@ -213,6 +213,7 @@ class OrderReader extends DbalReader
             ->where('`line_item`.`orderID` = :orderId')
             ->andWhere('`article_price`.`pricegroup` = `shop_customer_group`.`groupkey` OR `line_item`.`modus` <> 0')
             ->andWhere('`article_price`.`from` = 1 OR `line_item`.`modus` <> 0')
+            ->groupBy('`line_item`.`id`')
             ->andWhere('`article_media`.`main` = 1 OR `article_media`.`main` IS NULL')
             ->setParameter('orderId', $orderId)
             ->execute()->fetchAll();
