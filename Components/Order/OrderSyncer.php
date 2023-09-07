@@ -89,6 +89,7 @@ class OrderSyncer extends InlineRecordHandling
             $task = new CreateShopgateOrdersTask($data, $orderService, $this->logger);
 
             $validIndizes = array_values(array_keys($newOrders->toArray()));
+            $errorOrderIds = [];
             $orderNumbers = [];
 
             try {
@@ -100,9 +101,12 @@ class OrderSyncer extends InlineRecordHandling
                 foreach ($exception->getErrors() as $error) {
                     if ($error->has('entityIndex')) {
                         $index = $error->get('entityIndex');
+                        $errorOrderIds[] = $newOrders->getAt($index)->get('id');
                         unset($validIndizes[$index]);
                     }
                 }
+
+                $this->updateOrdersWithErrors($errorOrderIds);
             } catch (\Throwable $th) {
                 $this->exceptionHandler->handle($th, $shopId);
                 $validIndizes = [];
@@ -152,6 +156,21 @@ class OrderSyncer extends InlineRecordHandling
 
             $attribute->setOrderId($id);
             $attribute->setSgateShipFromStoreOrderNumber($order->get('orderNumber'));
+            $attribute->setSgateShipFromStoreExported(true);
+
+            $this->modelManager->persist($attribute);
+        }
+
+        $this->modelManager->flush();
+    }
+
+    public function updateOrdersWithErrors(array $orderIds): void
+    {
+        foreach ($orderIds as $orderId) {
+            $orderEntity = $this->orderRepository->findOneBy(['id' => $orderId]);
+            $attribute = $orderEntity->getAttribute() ?? new OrderAttribute();
+
+            $attribute->setOrderId($orderId);
             $attribute->setSgateShipFromStoreExported(true);
 
             $this->modelManager->persist($attribute);
