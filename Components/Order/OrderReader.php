@@ -62,7 +62,7 @@ class OrderReader extends DbalReader
     {
         $data = $this->fetchOrder($id);
         $data['lineItems'] = $this->fetchLineItems($id);
-        
+
         return $data;
     }
 
