@@ -62,7 +62,7 @@ class OrderReader extends DbalReader
     {
         $data = $this->fetchOrder($id);
         $data['lineItems'] = $this->fetchLineItems($id);
-
+        
         return $data;
     }
 
@@ -193,7 +193,7 @@ class OrderReader extends DbalReader
                 '`line_item`.`modus` as `type`',
                 '`order`.`currency` as `currencyCode`',
                 '`media`.`path` as `product.mediaPath`',
-                '`variant_media`.`path` as `product.variantMediaPath`',
+                '`article_detail`.`id` as `product.articleDetailId`'
             ])
             ->from('`s_order_details`', '`line_item`')
             ->leftJoin('`line_item`', '`s_articles_prices`', '`article_price`', '`line_item`.`articleDetailID` = `article_price`.`articledetailsID`')
@@ -205,18 +205,42 @@ class OrderReader extends DbalReader
             ->leftJoin('`shop`', '`s_core_customergroups`', '`shop_customer_group`', '`shop`.`customer_group_id` = `shop_customer_group`.`id`')
             ->leftJoin('`article`', '`s_articles_img`', '`article_media`', '`article`.`id` = `article_media`.`articleID`')
             ->leftJoin('`article_media`', '`s_media`', '`media`', '`article_media`.`media_id` = `media`.`id`')
-            ->leftJoin('`article_detail`', '`s_article_configurator_option_relations`', '`article_option_relations`', '`article_detail`.`id` = `article_option_relations`.`article_id`')
-            ->leftJoin('`article_option_relations`', '`s_article_img_mapping_rules`', '`article_image_mapping_rules`', '`article_option_relations`.`option_id` = `article_image_mapping_rules`.`option_id`')
-            ->leftJoin('`article_image_mapping_rules`', '`s_article_img_mappings`', '`article_image_mappings`', '`article_image_mapping_rules`.`mapping_id` = `article_image_mappings`.`id`')
-            ->leftJoin('`article_image_mappings`', '`s_articles_img`', '`variant_article_media`', '`article_image_mappings`.`image_id` = `variant_article_media`.`id`')
-            ->leftJoin('`variant_article_media`', '`s_media`', '`variant_media`', '`variant_article_media`.`media_id` = `variant_media`.`id`')
             ->where('`line_item`.`orderID` = :orderId')
             ->andWhere('`article_price`.`pricegroup` = `shop_customer_group`.`groupkey` OR `line_item`.`modus` <> 0')
             ->andWhere('`article_price`.`from` = 1 OR `line_item`.`modus` <> 0')
-            ->groupBy('`line_item`.`id`')
             ->andWhere('`article_media`.`main` = 1 OR `article_media`.`main` IS NULL')
             ->setParameter('orderId', $orderId)
             ->execute()->fetchAll();
+
+        $articleDetailIds = [];
+        foreach ($data as $lineItem) {
+            $articleDetailIds[] = $lineItem['product.articleDetailId'];
+        }
+
+        $dataVariantImages = $this->connection->createQueryBuilder()
+            ->select([
+                '`article_detail`.`id` as `product.articleDetailId`',
+                '`article_media`.`path`',
+            ])
+            ->from('`s_articles_details`', '`article_detail`')
+            ->leftJoin('`article_detail`', '`s_articles_img`', '`article_images_parent`', '`article_detail`.`id` = `article_images_parent`.`article_detail_id`')
+            ->leftJoin('`article_images_parent`', '`s_articles_img`', '`article_images`', '`article_images_parent`.`parent_id` = `article_images`.`id`')
+            ->leftJoin('`article_images`', '`s_media`', '`article_media`', '`article_images`.`media_id` = `article_media`.`id`')
+            ->where('`article_detail`.`id` IN (:articleDetailIds)')
+            ->orderBy('`article_images`.`position`')
+            ->setParameter('articleDetailIds', $articleDetailIds, Connection::PARAM_INT_ARRAY)
+            ->execute()->fetchAll();
+
+        foreach ($data as &$lineItem) {
+            foreach ($dataVariantImages as $dataVariantImage) {
+                if ($dataVariantImage['product.articleDetailId'] == $lineItem['product.articleDetailId'] &&
+                    !empty($dataVariantImage['path'])
+                ) {
+                    $lineItem['product.variantMediaPath'] = $dataVariantImage['path'];
+                    break;
+                }
+            }
+        }
 
         foreach ($data as &$lineItem) {
             $lineItem = ArrayUtil::flatToNested($lineItem);
@@ -236,6 +260,7 @@ class OrderReader extends DbalReader
 
             $lineItem['product']['image'] = $mediaPath !== null ? $this->mediaService->getUrl($mediaPath) : null;
             unset($lineItem['product']['mediaPath']);
+            unset($lineItem['product']['variantMediaPath']);
         }
 
         return $data;
