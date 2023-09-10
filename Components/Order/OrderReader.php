@@ -193,7 +193,7 @@ class OrderReader extends DbalReader
                 '`line_item`.`modus` as `type`',
                 '`order`.`currency` as `currencyCode`',
                 '`media`.`path` as `product.mediaPath`',
-                '`article_detail`.`id` as `product.articleDetailId`'
+                '`article_detail`.`id` as `product.articleDetailId`',
             ])
             ->from('`s_order_details`', '`line_item`')
             ->leftJoin('`line_item`', '`s_articles_prices`', '`article_price`', '`line_item`.`articleDetailID` = `article_price`.`articledetailsID`')
@@ -215,6 +215,64 @@ class OrderReader extends DbalReader
         $articleDetailIds = [];
         foreach ($data as $lineItem) {
             $articleDetailIds[] = $lineItem['product.articleDetailId'];
+        }
+
+        $dataVariantConfigurations = $this->connection->createQueryBuilder()
+            ->select([
+                '`article_detail`.`id` as `product.articleDetailId`',
+                '`variant_group`.`id` as `product.variantGroupId`',
+                '`variant_option`.`id` as `product.variantOptionId`',
+                '`variant_group`.`name` as `product.variantGroupName`',
+                '`variant_option`.`name` as `product.variantOptionName`'
+            ])
+            ->from('`s_articles_details`', '`article_detail`')
+            ->leftJoin('`article_detail`', '`s_article_configurator_option_relations`', '`variant_option_relation`', '`article_detail`.`id` = `variant_option_relation`.`article_id`')
+            ->leftJoin('`variant_option_relation`', '`s_article_configurator_options`', '`variant_option`', '`variant_option_relation`.`option_id` = `variant_option`.`id`')
+            ->leftJoin('`variant_option`', '`s_article_configurator_groups`', '`variant_group`', '`variant_group`.`id` = `variant_option`.`group_id`')
+            ->where('`article_detail`.`id` IN (:articleDetailIds)')
+            ->setParameter('articleDetailIds', $articleDetailIds, Connection::PARAM_INT_ARRAY)
+            ->execute()->fetchAll();
+
+        foreach ($data as &$lineItem) {
+            $optionCodeString = '';
+            $optionNameString = '';
+            $optionValueCodeString = '';
+            $optionValueNameString = '';
+
+            foreach ($dataVariantConfigurations as $variantConfiguration) {
+                if ($variantConfiguration['product.articleDetailId'] == $lineItem['product.articleDetailId'] &&
+                    !empty($variantConfiguration['product.variantGroupId']) &&
+                    !empty($variantConfiguration['product.variantGroupName']) &&
+                    !empty($variantConfiguration['product.variantOptionName'])
+                ) {
+                    $optionCodeString .= $variantConfiguration['product.variantGroupId'] . ' | ';
+                    $optionNameString .= $variantConfiguration['product.variantGroupName'] . ' | ';
+                    $optionValueCodeString .= mb_strtolower($variantConfiguration['product.variantOptionName']) . ' | ';
+                    $optionValueNameString .= $variantConfiguration['product.variantOptionName'] . ' | ';
+                }
+            }
+
+            $optionCodeString = rtrim($optionCodeString, ' | ');
+            $optionNameString = rtrim($optionNameString, ' | ');
+            $optionValueCodeString = rtrim($optionValueCodeString, ' | ');
+            $optionValueNameString = rtrim($optionValueNameString, ' | ');
+
+            if (!empty($optionCodeString) &&
+                !empty($optionNameString) &&
+                !empty($optionValueCodeString) &&
+                !empty($optionValueNameString)
+            ) {
+                $lineItemOptionValueArray = [
+                    'code' => $optionValueCodeString,
+                    'name' => $optionValueNameString
+                ];
+
+                $lineItem['product.options'][] = [
+                    'code' => $optionCodeString,
+                    'name' => $optionNameString,
+                    'value' => $lineItemOptionValueArray
+                ];
+            }
         }
 
         $dataVariantImages = $this->connection->createQueryBuilder()
