@@ -40,4 +40,6 @@ class Product extends PropertyEncapsulation
      * @var string|null
      */
     protected $image;
+
+    protected array $options = [];
 }
