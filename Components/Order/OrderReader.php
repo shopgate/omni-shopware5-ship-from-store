@@ -112,7 +112,7 @@ class OrderReader extends DbalReader
 
                 '`order`.`invoice_shipping` as `shippingTotal`',
                 '`order`.`invoice_amount` as `total`',
-                'CONCAT(DATE(`order`.`ordertime`), "T", TIME(`order`.`ordertime`), ".000Z") as `submitDate`',
+                'CONCAT(DATE(`order`.`ordertime`), "T", TIME(`order`.`ordertime`), ".000+02:00") as `submitDate`',
 
                 'IFNULL(`shop`.`host`, `main_shop`.`host`) as `domain`',
                 '`shop`.`id` as `shopId`',
@@ -253,7 +253,7 @@ class OrderReader extends DbalReader
                 }
             }
         }
-        
+
         $dataVariantImages = $this->connection->createQueryBuilder()
             ->select([
                 '`article_detail`.`id` as `product.articleDetailId`',
