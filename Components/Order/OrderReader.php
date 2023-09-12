@@ -234,47 +234,26 @@ class OrderReader extends DbalReader
             ->execute()->fetchAll();
 
         foreach ($data as &$lineItem) {
-            $optionCodeString = '';
-            $optionNameString = '';
-            $optionValueCodeString = '';
-            $optionValueNameString = '';
-
             foreach ($dataVariantConfigurations as $variantConfiguration) {
                 if ($variantConfiguration['product.articleDetailId'] == $lineItem['product.articleDetailId'] &&
                     !empty($variantConfiguration['product.variantGroupId']) &&
                     !empty($variantConfiguration['product.variantGroupName']) &&
                     !empty($variantConfiguration['product.variantOptionName'])
                 ) {
-                    $optionCodeString .= $variantConfiguration['product.variantGroupId'] . ' | ';
-                    $optionNameString .= $variantConfiguration['product.variantGroupName'] . ' | ';
-                    $optionValueCodeString .= mb_strtolower($variantConfiguration['product.variantOptionName']) . ' | ';
-                    $optionValueNameString .= $variantConfiguration['product.variantOptionName'] . ' | ';
+                    $lineItemOptionValueArray = [
+                        'code' => mb_strtolower($variantConfiguration['product.variantOptionName']),
+                        'name' => $variantConfiguration['product.variantOptionName']
+                    ];
+
+                    $lineItem['product.options'][] = [
+                        'code' => $variantConfiguration['product.variantGroupId'],
+                        'name' => $variantConfiguration['product.variantGroupName'],
+                        'value' => $lineItemOptionValueArray
+                    ];
                 }
             }
-
-            $optionCodeString = rtrim($optionCodeString, ' | ');
-            $optionNameString = rtrim($optionNameString, ' | ');
-            $optionValueCodeString = rtrim($optionValueCodeString, ' | ');
-            $optionValueNameString = rtrim($optionValueNameString, ' | ');
-
-            if (!empty($optionCodeString) &&
-                !empty($optionNameString) &&
-                !empty($optionValueCodeString) &&
-                !empty($optionValueNameString)
-            ) {
-                $lineItemOptionValueArray = [
-                    'code' => $optionValueCodeString,
-                    'name' => $optionValueNameString
-                ];
-
-                $lineItem['product.options'][] = [
-                    'code' => $optionCodeString,
-                    'name' => $optionNameString,
-                    'value' => $lineItemOptionValueArray
-                ];
-            }
         }
-
+        
         $dataVariantImages = $this->connection->createQueryBuilder()
             ->select([
                 '`article_detail`.`id` as `product.articleDetailId`',
