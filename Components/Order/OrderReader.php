@@ -38,9 +38,11 @@ class OrderReader extends DbalReader
         $sql = 'SELECT `order`.`id` as `id`, `order`.`cleared` as `paymentStatusId`, `order`.`language` as `shopId`
             FROM `s_order` `order` 
             LEFT JOIN `s_order_attributes` `order_attribute` ON `order`.`id` = `order_attribute`.`orderID`
+            LEFT JOIN `s_order_details` `order_details` ON `order`.`id` = `order_details`.`orderID`
             WHERE (`order_attribute`.`sgate_ship_from_store_exported` = 0 OR `order_attribute`.`sgate_ship_from_store_exported` IS NULL) 
                 AND `order`.`ordernumber` <> 0
-
+            GROUP BY `order`.`id`
+            HAVING COUNT(`order_details`.`id`) > 0
             ORDER BY `order`.`language`, `order`.`ordertime`';
 
         $orders = $this->connection->executeQuery($sql)->fetchAll();
