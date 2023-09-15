@@ -64,6 +64,13 @@
             </options>
         </element>
 
+        <!-- setImportedTrueFlag -->
+        <element type="boolean">
+            <name>setImportedTrueFlag</name>
+            <label lang="de">Bestellungen als imported übertragen</label>
+            <label lang="en">Transfer orders as imported</label>
+        </element>
+
         <!-- env -->
         <element type="select">
             <name>env</name>
