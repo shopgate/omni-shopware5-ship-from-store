@@ -33,7 +33,7 @@ SgateShipFromStore\Components\Order\Encapsulation\Order:
     domain:
       groups: ['normalization', 'denormalization']
     imported:
-      groups: ['normalization']
+      groups: ['normalization', 'denormalization']
     subTotal:
       groups: ['normalization', 'denormalization']
     discountAmount:
