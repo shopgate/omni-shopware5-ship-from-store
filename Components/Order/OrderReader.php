@@ -285,7 +285,7 @@ class OrderReader extends DbalReader
             $lineItem = ArrayUtil::flatToNested($lineItem);
 
             $config = $this->config->get($lineItem['shopId']);
-            $lineItem['product']['code'] = $lineItem['product']['identifiers'][$config->get('productCode')];
+            $lineItem['product']['code'] = $lineItem['product']['identifiers'][$config->get('productCode')] ?? "";
             unset($lineItem['shopId']);
 
             if (!empty($lineItem['product']['variantMediaPath']) &&
@@ -301,7 +301,7 @@ class OrderReader extends DbalReader
             unset($lineItem['product']['mediaPath']);
             unset($lineItem['product']['variantMediaPath']);
         }
-
+        
         return $data;
     }
 }
