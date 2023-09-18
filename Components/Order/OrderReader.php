@@ -145,14 +145,7 @@ class OrderReader extends DbalReader
             ->execute()->fetch();
 
         $data['shopCode'] = $this->config->get($data['shopId'])->get('shopCode');
-
-        $setAsImportedFlag = $this->config->get($data['shopId'])->get('setImportedTrueFlag');
-        if ($setAsImportedFlag) {
-            $data['imported'] = true;
-        }
-
-        $data['shopCode'] = $this->config->get($data['shopId'])->get('shopCode');
-
+        $data['imported'] = (bool) $this->config->get($data['shopId'])->get('setImportedTrueFlag');
         $data = ArrayUtil::flatToNested($data);
 
         return $data;

@@ -84,7 +84,7 @@ class OrderSyncer extends InlineRecordHandling
             $data = (new Container($newOrders->toArray()))->map(function (Order $order) {
                 return $this->orderNormalizer->normalize($order, null, [OrderNormalizer::GROUPS => ['normalization']]);
             })->toArray();
-
+            
             $orderService = $this->shopgateSdkRegistry->getShopgateSdk($shopId)->getOrderService();
             $task = new CreateShopgateOrdersTask($data, $orderService, $this->logger);
 
