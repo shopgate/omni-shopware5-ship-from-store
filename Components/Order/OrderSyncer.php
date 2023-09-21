@@ -84,13 +84,15 @@ class OrderSyncer extends InlineRecordHandling
             $data = (new Container($newOrders->toArray()))->map(function (Order $order) {
                 return $this->orderNormalizer->normalize($order, null, [OrderNormalizer::GROUPS => ['normalization']]);
             })->toArray();
-            
+
             $orderService = $this->shopgateSdkRegistry->getShopgateSdk($shopId)->getOrderService();
             $task = new CreateShopgateOrdersTask($data, $orderService, $this->logger);
 
             $validIndizes = array_values(array_keys($newOrders->toArray()));
             $errorOrderIds = [];
             $orderNumbers = [];
+
+            $this->logger->info('newOrders: ' . json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
             try {
                 $result = (array) $task->retry();
@@ -108,6 +110,8 @@ class OrderSyncer extends InlineRecordHandling
 
                 $this->updateOrdersWithErrors($errorOrderIds);
             } catch (\Throwable $th) {
+                $this->logger->info('Throwable: ' . json_encode($th, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
                 $this->exceptionHandler->handle($th, $shopId);
                 $validIndizes = [];
             }
@@ -120,6 +124,8 @@ class OrderSyncer extends InlineRecordHandling
         $validOrders = $orders->filter(function (Order $order) {
             return $order->get('orderNumber') !== null;
         });
+
+        $this->logger->info('validOrders: ' . json_encode($validOrders, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
         $this->updateOrders($validOrders);
     }

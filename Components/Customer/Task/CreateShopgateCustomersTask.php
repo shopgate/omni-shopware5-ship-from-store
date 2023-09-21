@@ -40,7 +40,7 @@ class CreateShopgateCustomersTask extends Task
         $result = $this->customerService->addCustomers($this->customers, [], false);
         $errors = $result['errors'] ?? [];
 
-        $this->logger->info(json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        $this->logger->info('CUSTOMER CREATE: ' . json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
         if (count($errors) > 0) {
             $exception = ApiErrorException::fromResult('Create customers', $errors);
