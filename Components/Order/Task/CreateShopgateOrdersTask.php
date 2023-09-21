@@ -37,10 +37,12 @@ class CreateShopgateOrdersTask extends Task
 
     public function execute()
     {
+        $this->logger->info('ORDERS: ' . json_encode($this->orders, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
         $result = $this->orderService->addOrders($this->orders);
         $errors = $result['errors'] ?? [];
 
-        $this->logger->info(json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        $this->logger->info('RESULT: ' . json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
         if (count($errors) > 0) {
             $exception = ApiErrorException::fromResult('Create orders', $errors);
