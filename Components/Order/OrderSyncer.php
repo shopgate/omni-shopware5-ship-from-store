@@ -73,6 +73,7 @@ class OrderSyncer extends InlineRecordHandling
     public function syncOrders(OrderContainer $orders, int $shopId): void
     {
         $this->resolveOrders($orders, $shopId);
+        $this->updateOrders($orders);
 
         $newOrders = $orders->filter(function (Order $order) {
             return $order->get('orderNumber') === null;
@@ -115,7 +116,7 @@ class OrderSyncer extends InlineRecordHandling
                 $this->exceptionHandler->handle($th, $shopId);
                 $validIndizes = [];
             }
-
+            
             foreach ($validIndizes as $index) {
                 $newOrders->getAt($index)->set('orderNumber', $orderNumbers[$index]);
             }
@@ -124,8 +125,6 @@ class OrderSyncer extends InlineRecordHandling
         $validOrders = $orders->filter(function (Order $order) {
             return $order->get('orderNumber') !== null;
         });
-
-        $this->logger->info('validOrders: ' . json_encode($validOrders, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
         $this->updateOrders($validOrders);
     }
@@ -156,15 +155,17 @@ class OrderSyncer extends InlineRecordHandling
     public function updateOrders(OrderContainer $orders): void
     {
         foreach ($orders as $order) {
-            $id = $order->get('id');
-            $orderEntity = $this->orderRepository->findOneBy(['id' => $id]);
-            $attribute = $orderEntity->getAttribute() ?? new OrderAttribute();
+            if (!empty($order->get('orderNumber'))) {
+                $id = $order->get('id');
+                $orderEntity = $this->orderRepository->findOneBy(['id' => $id]);
+                $attribute = $orderEntity->getAttribute() ?? new OrderAttribute();
 
-            $attribute->setOrderId($id);
-            $attribute->setSgateShipFromStoreOrderNumber($order->get('orderNumber'));
-            $attribute->setSgateShipFromStoreExported(true);
+                $attribute->setOrderId($id);
+                $attribute->setSgateShipFromStoreOrderNumber($order->get('orderNumber'));
+                $attribute->setSgateShipFromStoreExported(true);
 
-            $this->modelManager->persist($attribute);
+                $this->modelManager->persist($attribute);
+            }
         }
 
         $this->modelManager->flush();
