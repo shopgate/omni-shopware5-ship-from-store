@@ -116,7 +116,7 @@ class OrderSyncer extends InlineRecordHandling
                 $this->exceptionHandler->handle($th, $shopId);
                 $validIndizes = [];
             }
-
+            
             foreach ($validIndizes as $index) {
                 $newOrders->getAt($index)->set('orderNumber', $orderNumbers[$index]);
             }
@@ -125,8 +125,6 @@ class OrderSyncer extends InlineRecordHandling
         $validOrders = $orders->filter(function (Order $order) {
             return $order->get('orderNumber') !== null;
         });
-
-        $this->logger->info('validOrders: ' . json_encode($validOrders, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
         $this->updateOrders($validOrders);
     }
