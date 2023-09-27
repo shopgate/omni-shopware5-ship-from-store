@@ -302,7 +302,7 @@ class OrderReader extends DbalReader
             unset($lineItem['product']['mediaPath']);
             unset($lineItem['product']['variantMediaPath']);
         }
-        
+
         return $data;
     }
 }
