@@ -127,6 +127,7 @@ class OrderReader extends DbalReader
                 '`customer_attribute`.`sgate_ship_from_store_customer_number` as `customer.internalCustomerNumber`',
                 '`customer`.`id` as `customer.shopwareId`',
                 '`customer`.`salutation` as `customer.salutation`',
+                '`customer`.`language` as `customer.shopId`',
             ])
             ->from('`s_order`', '`order`')
             ->leftJoin('`order`', '`s_user`', '`customer`', '`order`.`userID` = `customer`.`id`')
