@@ -2,67 +2,52 @@
 
 namespace SgateShipFromStore\Components\Article;
 
-use Doctrine\ORM\EntityRepository;
+use Doctrine\DBAL\Connection;
 use Dustin\Encapsulation\ArrayEncapsulation;
 use Dustin\Encapsulation\Container;
-use SgateShipFromStore\Components\Article\Encapsulation\Inventory;
+use Psr\Log\LoggerInterface;
 use SgateShipFromStore\Components\Article\Encapsulation\InventoryContainer;
 use SgateShipFromStore\Framework\Sequence\InlineRecordHandling;
-use Shopware\Components\Model\ModelManager;
-use Shopware\Models\Article\Detail as ArticleDetailEntity;
-use Psr\Log\LoggerInterface;
 
 class StockUpdater extends InlineRecordHandling
 {
-    /**
-     * @var ModelManager
-     */
-    private $modelManager;
-
     /**
      * @var ArrayEncapsulation
      */
     private $config;
 
     /**
-     * @var EntityRepository
-     */
-    private $articleRepository;
-
-    /**
      * @var LoggerInterface
      */
     private $logger;
 
+    /**
+     * @var Connection
+     */
+    private $connection;
+
     public function __construct(
-        ModelManager $modelManager,
         ArrayEncapsulation $config,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        Connection $connection
     ) {
-        $this->modelManager = $modelManager;
         $this->config = $config;
-        $this->articleRepository = $modelManager->getRepository(ArticleDetailEntity::class);
         $this->logger = $logger;
+        $this->connection = $connection;
     }
 
     public function updateStocks(InventoryContainer $inventories, int $shopId): void
     {
-        $productCodeField = $this->config->get($shopId)->get('productCode') === 'ean' ? 'ean' : 'number';
+        $productCodeField = $this->config->get($shopId)->get('productCode') === 'ean' ? 'ean' : 'ordernumber';
         $logOutput = [];
 
-        /** @var Inventory $inventory */
+        $stockUpdateQuery = sprintf('UPDATE `s_articles_details` SET `instock` = :instock WHERE `%s` = :value', $productCodeField);
+
         foreach ($inventories as $inventory) {
-            $article = $this->articleRepository->findOneBy([$productCodeField => $inventory->get('productCode')]);
-
-            if (!$article) {
-                continue;
-            }
-
-            $article->setInStock($inventory->get('visible'));
-            $logOutput[$article->getNumber()] = $inventory->get('visible');
+            $this->connection->executeStatement($stockUpdateQuery, ['instock' => $inventory->get('visible'), 'value' => $inventory->get('productCode')]);
+            $logOutput[$inventory->get('productCode')] = $inventory->get('visible');
         }
 
-        $this->modelManager->flush();
         $this->logger->info('Stocks successfully updated', $logOutput);
     }
 

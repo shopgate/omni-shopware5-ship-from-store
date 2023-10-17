@@ -79,28 +79,35 @@ class InventoryReader extends Reader
                 $params['filters'] = $filters;
             }
 
-            try {
-                $result = $catalogService->getCumulatedInventories($params);
-            } catch (\Throwable $th) {
-                $this->exceptionHandler->handle($th, $shopId);
+            $after = null;
 
-                continue;
-            }
+            do {
+                $params['after'] = $after;
 
-            $cumulatedInventories = $result['cumulatedInventories'] ?? [];
+                try {
+                    $result = $catalogService->getCumulatedInventories($params);
+                } catch (\Throwable $th) {
+                    $this->exceptionHandler->handle($th, $shopId);
 
-            foreach ($cumulatedInventories as $inventory) {
-                $identifier = new StockIdentifier([
-                    'productCode' => $inventory['productCode'],
-                    'shopId' => $shopId,
-                ]);
+                    continue;
+                }
 
-                $inventory = array_merge($inventory, ['shopId' => $shopId]);
+                $cumulatedInventories = $result['cumulatedInventories'] ?? [];
+                $after = $result['meta']['cursors']['after'] ?? null;
 
-                $this->cache->set($identifier->toString(), $inventory);
+                foreach ($cumulatedInventories as $inventory) {
+                    $identifier = new StockIdentifier([
+                        'productCode' => $inventory['productCode'],
+                        'shopId' => $shopId,
+                    ]);
 
-                yield $identifier;
-            }
+                    $inventory = array_merge($inventory, ['shopId' => $shopId]);
+
+                    $this->cache->set($identifier->toString(), $inventory);
+
+                    yield $identifier;
+                }
+            } while ($after !== null);
         }
     }
 
