@@ -160,6 +160,7 @@ class OrderReader extends DbalReader
                 '`line_item`.`quantity` as `quantity`',
 
                 '`line_item`.`name` as `product.name`',
+
                 'IF(
                     NULLIF(`article_price`.`pseudoprice`, 0) IS NULL,
                     `article_price`.`price` * (1+(`tax`.`tax` / 100)),
@@ -170,20 +171,32 @@ class OrderReader extends DbalReader
                     `article_price`.`price` * (1+(`tax`.`tax` / 100)),
                     NULL
                 ) as `product.salePrice`',
+
                 '`order`.`currency` as `product.currencyCode`',
                 'NULLIF(`article_detail`.`ean`, "") as `product.identifiers.ean`',
                 '`article_detail`.`ordernumber` as `product.identifiers.sku`',
                 '`order`.`language` as `shopId`',
+
                 'IF(
-                    `order`.`net` = 1 AND `order`.`taxfree` = 0,
-                    `line_item`.`price` * (1+(`line_item`.`tax_rate` / 100)),
-                    `line_item`.`price`
+                    NULLIF(`article_price`.`pseudoprice`, 0) IS NULL,
+                    IF(
+                        `order`.`net` = 1 AND `order`.`taxfree` = 0,
+                        `line_item`.`price` * (1+(`line_item`.`tax_rate` / 100)),
+                        `line_item`.`price`
+                    ),
+                    IF(
+                        `order`.`taxfree` = 0,
+                        `article_price`.`pseudoprice` * (1+(`tax`.`tax` / 100)),
+                        `article_price`.`pseudoprice`
+                    )
                 ) as `price`',
+
                 'IF(
                     `order`.`net` = 1 AND `order`.`taxfree` = 0,
                     `line_item`.`price` * (1+(`line_item`.`tax_rate` / 100)),
                     `line_item`.`price`
                 ) as `extendedPrice`',
+
                 'IF(
                     `order`.`net` = 1,
                     IF(
