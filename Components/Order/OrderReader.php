@@ -127,6 +127,7 @@ class OrderReader extends DbalReader
                 '`customer_attribute`.`sgate_ship_from_store_customer_number` as `customer.internalCustomerNumber`',
                 '`customer`.`id` as `customer.shopwareId`',
                 '`customer`.`salutation` as `customer.salutation`',
+                '`customer`.`language` as `customer.shopId`',
             ])
             ->from('`s_order`', '`order`')
             ->leftJoin('`order`', '`s_user`', '`customer`', '`order`.`userID` = `customer`.`id`')
@@ -159,6 +160,7 @@ class OrderReader extends DbalReader
                 '`line_item`.`quantity` as `quantity`',
 
                 '`line_item`.`name` as `product.name`',
+
                 'IF(
                     NULLIF(`article_price`.`pseudoprice`, 0) IS NULL,
                     `article_price`.`price` * (1+(`tax`.`tax` / 100)),
@@ -169,20 +171,32 @@ class OrderReader extends DbalReader
                     `article_price`.`price` * (1+(`tax`.`tax` / 100)),
                     NULL
                 ) as `product.salePrice`',
+
                 '`order`.`currency` as `product.currencyCode`',
                 'NULLIF(`article_detail`.`ean`, "") as `product.identifiers.ean`',
                 '`article_detail`.`ordernumber` as `product.identifiers.sku`',
                 '`order`.`language` as `shopId`',
+
                 'IF(
-                    `order`.`net` = 1 AND `order`.`taxfree` = 0,
-                    `line_item`.`price` * (1+(`line_item`.`tax_rate` / 100)),
-                    `line_item`.`price`
+                    NULLIF(`article_price`.`pseudoprice`, 0) IS NULL,
+                    IF(
+                        `order`.`net` = 1 AND `order`.`taxfree` = 0,
+                        `line_item`.`price` * (1+(`line_item`.`tax_rate` / 100)),
+                        `line_item`.`price`
+                    ),
+                    IF(
+                        `order`.`taxfree` = 0,
+                        `article_price`.`pseudoprice` * (1+(`tax`.`tax` / 100)),
+                        `article_price`.`pseudoprice`
+                    )
                 ) as `price`',
+
                 'IF(
                     `order`.`net` = 1 AND `order`.`taxfree` = 0,
                     `line_item`.`price` * (1+(`line_item`.`tax_rate` / 100)),
                     `line_item`.`price`
                 ) as `extendedPrice`',
+
                 'IF(
                     `order`.`net` = 1,
                     IF(
@@ -226,7 +240,7 @@ class OrderReader extends DbalReader
                 '`variant_group`.`id` as `product.variantGroupId`',
                 '`variant_option`.`id` as `product.variantOptionId`',
                 '`variant_group`.`name` as `product.variantGroupName`',
-                '`variant_option`.`name` as `product.variantOptionName`'
+                '`variant_option`.`name` as `product.variantOptionName`',
             ])
             ->from('`s_articles_details`', '`article_detail`')
             ->leftJoin('`article_detail`', '`s_article_configurator_option_relations`', '`variant_option_relation`', '`article_detail`.`id` = `variant_option_relation`.`article_id`')
@@ -245,13 +259,13 @@ class OrderReader extends DbalReader
                 ) {
                     $lineItemOptionValueArray = [
                         'code' => mb_strtolower($variantConfiguration['product.variantOptionName']),
-                        'name' => $variantConfiguration['product.variantOptionName']
+                        'name' => $variantConfiguration['product.variantOptionName'],
                     ];
 
                     $lineItem['product.options'][] = [
                         'code' => $variantConfiguration['product.variantGroupId'],
                         'name' => $variantConfiguration['product.variantGroupName'],
-                        'value' => $lineItemOptionValueArray
+                        'value' => $lineItemOptionValueArray,
                     ];
                 }
             }
@@ -286,14 +300,13 @@ class OrderReader extends DbalReader
             $lineItem = ArrayUtil::flatToNested($lineItem);
 
             $config = $this->config->get($lineItem['shopId']);
-            $lineItem['product']['code'] = $lineItem['product']['identifiers'][$config->get('productCode')] ?? "";
+            $lineItem['product']['code'] = $lineItem['product']['identifiers'][$config->get('productCode')] ?? '';
             unset($lineItem['shopId']);
 
             if (!empty($lineItem['product']['variantMediaPath']) &&
                 $lineItem['product']['variantMediaPath'] !== $lineItem['product']['mediaPath']
             ) {
                 $mediaPath = $lineItem['product']['variantMediaPath'];
-
             } else {
                 $mediaPath = $lineItem['product']['mediaPath'];
             }

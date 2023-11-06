@@ -39,7 +39,7 @@
         </service>
 
         <!-- ExceptionHandler -->
-        <service id="SgateShipFromStore\Framework\ExceptionHandler">
+        <service id="SgateShipFromStore\Framework\ExceptionHandler" public="true">
             <argument type="service" id="SgateShipFromStore\Framework\Logger" />
             <argument type="service" id="sgate_ship_from_store.config.per_shop" />
             <argument type="service" id="Shopware\Components\Validator\EmailValidator" />

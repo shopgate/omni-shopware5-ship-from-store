@@ -4,7 +4,7 @@
     <label>Shopgate Ship-from-Store</label>
     <label lang="de">Shopgate Ship-from-Store</label>
 
-    <version>1.0.1</version>
+    <version>1.2.0</version>
     <copyright>(c) by Shopgate GmbH</copyright>
     <link>https://shopgate.com</link>
     <author>Shopgate GmbH</author>
@@ -17,6 +17,55 @@
         </changes>
         <changes>
             Initial release
+        </changes>
+    </changelog>
+
+    <changelog version="1.1.0">
+        <changes lang="de">
+            - Bestellpositionen werden ebenfalls aktualisiert
+            - Inventory Import wird mehrfach durchlaufen, wenn das Limit im Ergebnis erreicht ist
+        </changes>
+        <changes>
+            - Order positions will be updated on order update
+            - Inventory import now considers reached limit
+        </changes>
+    </changelog>
+
+    <changelog version="1.1.1">
+        <changes lang="de">
+            - Lagerbestände werden stapelweise aktualisiert
+        </changes>
+        <changes>
+            - Stocks will be updated in batches
+        </changes>
+    </changelog>
+
+    <changelog version="1.1.2">
+        <changes lang="de">
+            - Lagerbestände werden nun per SQL-Query aktualisiert
+        </changes>
+        <changes>
+            - Stocks will be updated via SQL query
+        </changes>
+    </changelog>
+
+    <changelog version="1.1.3">
+        <changes lang="de">
+            - Bugfix: Shop ID des Kunden wurde nicht gelesen
+        </changes>
+        <changes>
+            - Bugfix: Shop id of customer was missing
+        </changes>
+    </changelog>
+
+    <changelog version="1.2.0">
+        <changes lang="de">
+            - SQL Queries beim Import der Lagerbestände optimiert
+            - Streichpreise werden beim Bestellexport mit übergeben
+        </changes>
+        <changes>
+            - Optimized SQL queries for stock import
+            - add sale price to order export
         </changes>
     </changelog>
 

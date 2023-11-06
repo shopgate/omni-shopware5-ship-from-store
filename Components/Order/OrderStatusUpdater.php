@@ -33,10 +33,12 @@ class OrderStatusUpdater implements RecordHandling
 
     public function __construct(
         ArrayEncapsulation $config,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        Connection $connection
     ) {
         $this->config = $config;
         $this->logger = $logger;
+        $this->connection = $connection;
         $this->orderService = Shopware()->Modules()->Order();
     }
 
@@ -58,8 +60,20 @@ class OrderStatusUpdater implements RecordHandling
             return;
         }
 
-        $this->logger->error(sprintf('Set status of order %s to %s.', $orderUpdate->getOrderId(), $statusId));
         $this->orderService->setOrderStatus($orderUpdate->getOrderId(), $statusId, true);
+        $orderDetails = $this->getOrderDetails($orderUpdate->getOrderId());
+
+        $this->updateOrderDetails($orderDetails, OrderStatus::getOrderDetailStatus($statusId));
+    }
+
+    private function getOrderDetails(int $orderId): array
+    {
+        return $this->connection->createQueryBuilder()
+            ->select(['id', 'quantity'])
+            ->from('s_order_details')
+            ->where('orderID = :orderId')
+            ->setParameter('orderId', $orderId)
+            ->execute()->fetchAll();
     }
 
     private function getStatusId(string $status): ?int
@@ -68,5 +82,19 @@ class OrderStatusUpdater implements RecordHandling
         $id = $this->config->get($field);
 
         return $id !== null ? (int) $id : null;
+    }
+
+    private function updateOrderDetails(array $orderDetails, int $statusId): void
+    {
+        $query = $this->connection->createQueryBuilder()
+            ->update('s_order_details')
+            ->set('status', ':status')
+            ->set('shipped', ':quantity')
+            ->where('id = :id');
+
+        foreach ($orderDetails as $orderDetail) {
+            $orderDetail['status'] = $statusId;
+            $query->setParameters($orderDetail)->execute();
+        }
     }
 }

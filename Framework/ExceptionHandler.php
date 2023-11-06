@@ -40,7 +40,7 @@ class ExceptionHandler
         $this->shopwareConfig = Shopware()->Config();
     }
 
-    public function handle(\Throwable $exception, int $shopId): void
+    public function handle(\Throwable $exception, int $shopId, bool $sendMail = true): void
     {
         if ($exception instanceof ApiErrorException) {
             foreach ($exception->getErrors() as $error) {
@@ -50,7 +50,9 @@ class ExceptionHandler
             $this->logger->error($exception->getMessage()."\n".$exception->getTraceAsString());
         }
 
-        $this->sendErrorMail($exception, $shopId);
+        if ($sendMail === true) {
+            $this->sendErrorMail($exception, $shopId);
+        }
     }
 
     public function sendErrorMail(\Throwable $exception, int $shopId): void
@@ -79,6 +81,10 @@ class ExceptionHandler
     private function getRecipientMails(int $shopId): array
     {
         $config = $this->config->get($shopId);
+
+        if (!$config) {
+            return [];
+        }
 
         $mails = trim((string) $config->get('errorMailAddresses'), ',');
         $mails = explode(',', $mails);
