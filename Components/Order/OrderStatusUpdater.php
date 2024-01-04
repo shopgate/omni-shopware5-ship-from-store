@@ -8,6 +8,7 @@ use Dustin\ImpEx\Sequence\RecordHandling;
 use Dustin\ImpEx\Sequence\Transferor;
 use Psr\Log\LoggerInterface;
 use SgateShipFromStore\Components\Order\Encapsulation\OrderStatusUpdate;
+use SgateShipFromStore\Framework\ShopgateSdkRegistry;
 
 class OrderStatusUpdater implements RecordHandling
 {
@@ -27,6 +28,11 @@ class OrderStatusUpdater implements RecordHandling
     private $connection;
 
     /**
+     * @var ShopgateSdkRegistry
+     */
+    private $shopgateSdkRegistry;
+
+    /**
      * @var \sOrder
      */
     private $orderService;
@@ -34,11 +40,13 @@ class OrderStatusUpdater implements RecordHandling
     public function __construct(
         ArrayEncapsulation $config,
         LoggerInterface $logger,
-        Connection $connection
+        Connection $connection,
+        ShopgateSdkRegistry $shopgateSdkRegistry
     ) {
         $this->config = $config;
         $this->logger = $logger;
         $this->connection = $connection;
+        $this->shopgateSdkRegistry = $shopgateSdkRegistry;
         $this->orderService = Shopware()->Modules()->Order();
     }
 
@@ -61,19 +69,10 @@ class OrderStatusUpdater implements RecordHandling
         }
 
         $this->orderService->setOrderStatus($orderUpdate->getOrderId(), $statusId, true);
-        $orderDetails = $this->getOrderDetails($orderUpdate->getOrderId());
 
-        $this->updateOrderDetails($orderDetails, OrderStatus::getOrderDetailStatus($statusId));
-    }
+        $lineItems = $this->shopgateSdkRegistry->getShopgateSdk($orderUpdate->getShopId())->getOrderService()->getOrder($orderUpdate->getSalesOrderNumber())['lineItems'] ?? [];
 
-    private function getOrderDetails(int $orderId): array
-    {
-        return $this->connection->createQueryBuilder()
-            ->select(['id', 'quantity'])
-            ->from('s_order_details')
-            ->where('orderID = :orderId')
-            ->setParameter('orderId', $orderId)
-            ->execute()->fetchAll();
+        $this->updateOrderDetails($lineItems, $orderUpdate);
     }
 
     private function getStatusId(string $status): ?int
@@ -84,17 +83,37 @@ class OrderStatusUpdater implements RecordHandling
         return $id !== null ? (int) $id : null;
     }
 
-    private function updateOrderDetails(array $orderDetails, int $statusId): void
+    private function updateOrderDetails(array $lineItems, OrderStatusUpdate $orderUpdate): void
     {
-        $query = $this->connection->createQueryBuilder()
+        $updateStatus = $this->connection->createQueryBuilder()
             ->update('s_order_details')
             ->set('status', ':status')
-            ->set('shipped', ':quantity')
             ->where('id = :id');
 
-        foreach ($orderDetails as $orderDetail) {
-            $orderDetail['status'] = $statusId;
-            $query->setParameters($orderDetail)->execute();
+        $updateShipped = $this->connection->createQueryBuilder()
+            ->update('s_order_details')
+            ->set('status', ':status')
+            ->set('shipped', ':shipped')
+            ->where('id = :id');
+
+        foreach ($lineItems as $lineItem) {
+            $this->logger->error(sprintf('Updating line item: %s', json_encode($lineItem, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)));
+
+            $params = [
+                'status' => OrderStatus::getOrderDetailStatusId($lineItem['status']),
+                'id' => $lineItem['code'],
+            ];
+
+            $query = $updateStatus;
+
+            if ($orderUpdate->get('newStatus') !== OrderStatus::CANCELED && $lineItem['status'] === OrderStatus::FULFILLED) {
+                $params['shipped'] = $lineItem['quantity'];
+                $query = $updateShipped;
+            }
+
+            $query->setParameters($params)->execute();
+
+            $this->logger->error(sprintf('Updated line item %s with params: %s', $lineItem['code'], json_encode($params, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)));
         }
     }
 }

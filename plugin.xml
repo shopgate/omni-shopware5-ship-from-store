@@ -4,7 +4,7 @@
     <label>Shopgate Ship-from-Store</label>
     <label lang="de">Shopgate Ship-from-Store</label>
 
-    <version>1.2.0</version>
+    <version>1.4.4</version>
     <copyright>(c) by Shopgate GmbH</copyright>
     <link>https://shopgate.com</link>
     <author>Shopgate GmbH</author>
@@ -66,6 +66,62 @@
         <changes>
             - Optimized SQL queries for stock import
             - add sale price to order export
+        </changes>
+    </changelog>
+
+    <changelog version="1.3.0">
+        <changes lang="de">
+            - Performance des Lagerbestandsimports verbessert
+        </changes>
+        <changes>
+            - Optimized performance of inventory import
+        </changes>
+    </changelog>
+
+    <changelog version="1.4.0">
+        <changes lang="de">
+            - Versendete Menge der Bestellpositionen wird mit Shopgate abgeglichen
+            - Zeitzone gefixt
+        </changes>
+        <changes>
+            - Shipped amount of order line items will be synced with Shopgate
+            - Fixed timezone
+        </changes>
+    </changelog>
+
+    <changelog version="1.4.1">
+        <changes lang="de">
+            - Versand-Menge der Positionen wird nur noch gesetzt, wenn die Bestellung nicht storniert ist
+        </changes>
+        <changes>
+            - Only set shipped amount of line items of order is not canceled
+        </changes>
+    </changelog>
+
+    <changelog version="1.4.2">
+        <changes lang="de">
+            - Versand-Menge der Positionen wird nur noch gesetzt, wenn Bestellung und Position nicht storniert sind
+        </changes>
+        <changes>
+            - Only set shipped amount of line items of order and line item are not canceled
+        </changes>
+    </changelog>
+
+    <changelog version="1.4.3">
+        <changes lang="de">
+            - Versand-Menge der Positionen wird nur noch gesetzt, wenn Position sich im Status "fulfilled" befindet
+        </changes>
+        <changes>
+            - Only set shipped amount of line items if line item is in state "fulfilled"
+        </changes>
+    </changelog>
+
+    <changelog version="1.4.4">
+        <changes lang="de">
+            - Der Name der Bezahlart wird an die Kundennotiz angehangen.
+        </changes>
+        <changes>
+            - Payment name will be added to customer note.
         </changes>
     </changelog>
 

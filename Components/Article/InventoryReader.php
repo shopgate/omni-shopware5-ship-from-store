@@ -117,6 +117,7 @@ class InventoryReader extends Reader
     protected function read($identifier): ?array
     {
         $this->validateIdentifier($identifier);
+
         $key = $identifier->toString();
 
         if ($this->cache->has($key)) {

@@ -78,7 +78,18 @@ class OrderReader extends DbalReader
                 'REPLACE(LOWER(`locale`.`locale`), "_", "-") as `localeCode`',
                 '`order`.`currency` as `currencyCode`',
                 '`order`.`taxfree` as `taxExempt`',
-                'NULLIF(`order`.`customercomment`, "") as `notes`',
+                'CONCAT(
+                    IF(
+                        NULLIF(TRIM(`order`.`customercomment`), "") IS NOT NULL,
+                        CONCAT(`order`.`customercomment`, "\n\n"),
+                        ""
+                    ),
+                    IF(
+                        NULLIF(`payment_method`.`description`, "") IS NOT NULL,
+                        CONCAT("Bezahlt mit: ", `payment_method`.`description`),
+                        ""
+                    )
+                ) as `notes`',
                 'NULLIF(`order`.`internalcomment`, "") as `specialInstructions`',
 
                 '"billing" as `addressSequences.0.type`',
@@ -114,7 +125,7 @@ class OrderReader extends DbalReader
 
                 '`order`.`invoice_shipping` as `shippingTotal`',
                 '`order`.`invoice_amount` as `total`',
-                'CONCAT(DATE(`order`.`ordertime`), "T", TIME(`order`.`ordertime`), ".000+02:00") as `submitDate`',
+                sprintf('CONCAT(DATE(`order`.`ordertime`), "T", TIME(`order`.`ordertime`), ".000%s") as `submitDate`', date_create()->format('P')),
 
                 'IFNULL(`shop`.`host`, `main_shop`.`host`) as `domain`',
                 '`shop`.`id` as `shopId`',
@@ -141,6 +152,7 @@ class OrderReader extends DbalReader
             ->leftJoin('`shipping_address`', '`s_core_countries_states`', '`shipping_address_state`', '`shipping_address`.`stateID` = `shipping_address_state`.`id`')
             ->leftJoin('`shipping_address`', '`s_core_countries`', '`shipping_address_country`', '`shipping_address`.`countryID` = `shipping_address_country`.`id`')
             ->leftJoin('`customer`', '`s_user_attributes`', '`customer_attribute`', '`customer`.`id` = `customer_attribute`.`userID`')
+            ->leftJoin('`order`', '`s_core_paymentmeans`', '`payment_method`', '`order`.`paymentID` = `payment_method`.`id`')
             ->where('`order`.`id` = :id')
             ->setParameter('id', $id)
             ->execute()->fetch();

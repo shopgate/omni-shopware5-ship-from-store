@@ -25,17 +25,9 @@
             <tag name="impex.handling.transferor" sequence="sgate_inventory_import" />
         </service>
 
-        <!-- ArticleFilter -->
-        <service id="SgateShipFromStore\Components\Article\ArticleFilter">
-            <argument type="service" id="dbal_connection" />
-            <argument type="service" id="sgate_ship_from_store.config.per_shop" />
-
-            <tag name="impex.handling" sequence="sgate_inventory_import" priority="950" />
-        </service>
-
         <!-- StockUpdater -->
         <service id="SgateShipFromStore\Components\Article\StockUpdater">
-            <argument type="service" id="sgate_ship_from_store.config.per_shop" />
+            <argument type="service" id="sgate_ship_from_store.config.default" />
             <argument type="service" id="SgateShipFromStore\Framework\Logger" />
             <argument type="service" id="dbal_connection" />
 
