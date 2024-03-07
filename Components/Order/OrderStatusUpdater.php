@@ -97,8 +97,6 @@ class OrderStatusUpdater implements RecordHandling
             ->where('id = :id');
 
         foreach ($lineItems as $lineItem) {
-            $this->logger->error(sprintf('Updating line item: %s', json_encode($lineItem, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)));
-
             $params = [
                 'status' => OrderStatus::getOrderDetailStatusId($lineItem['status']),
                 'id' => $lineItem['code'],
@@ -112,8 +110,6 @@ class OrderStatusUpdater implements RecordHandling
             }
 
             $query->setParameters($params)->execute();
-
-            $this->logger->error(sprintf('Updated line item %s with params: %s', $lineItem['code'], json_encode($params, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)));
         }
     }
 }
