@@ -9,9 +9,9 @@ use Psr\Log\LoggerInterface;
 use SgateShipFromStore\Components\Customer\Encapsulation\Customer;
 use SgateShipFromStore\Components\Customer\Encapsulation\CustomerContainer;
 use SgateShipFromStore\Components\Customer\Task\CreateShopgateCustomersTask;
-use SgateShipFromStore\Framework\ShopgateSdkRegistry;
 use SgateShipFromStore\Framework\ExceptionHandler;
 use SgateShipFromStore\Framework\Sequence\InlineRecordHandling;
+use SgateShipFromStore\Framework\ShopgateSdkRegistry;
 use Shopware\Components\Model\ModelManager;
 use Shopware\Models\Attribute\Customer as CustomerAttribute;
 use Shopware\Models\Customer\Customer as CustomerEntity;
@@ -62,7 +62,7 @@ class CustomerSyncer extends InlineRecordHandling
             return;
         }
 
-        $uniqueCustomers = $customers->unique(SORT_REGULAR);
+        $uniqueCustomers = $customers->uniqueByIdentifier();
 
         $this->resolveShopgateIds($customers, $shopId);
 
