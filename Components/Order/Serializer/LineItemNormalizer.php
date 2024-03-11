@@ -3,9 +3,10 @@
 namespace SgateShipFromStore\Components\Order\Serializer;
 
 use Dustin\ImpEx\Serializer\Converter\NormalizerConverter;
-use Dustin\ImpEx\Serializer\Converter\Numeric\FloatConverter;
 use Dustin\ImpEx\Serializer\Converter\Numeric\IntConverter;
 use SgateShipFromStore\Components\Order\Encapsulation\Product;
+use SgateShipFromStore\Components\Order\Serializer\Converter\LineItemPriceCalculator;
+use SgateShipFromStore\Components\Order\Serializer\Converter\LineItemExtendedPriceCalculator;
 use SgateShipFromStore\Framework\Serializer\EncapsulationNormalizer;
 use SgateShipFromStore\Components\Order\Encapsulation\LineItem;
 
@@ -24,8 +25,8 @@ class LineItemNormalizer extends EncapsulationNormalizer
             self::CONVERTERS => [
                 'quantity' => new IntConverter(),
                 'shipToAddressSequenceIndex' => new IntConverter(),
-                'extendedPrice' => new FloatConverter(),
-                'price' => new FloatConverter(),
+                'price' => new LineItemPriceCalculator(),
+                'extendedPrice' => new LineItemExtendedPriceCalculator(),
                 'product' => new NormalizerConverter(
                     $productNormalizer,
                     $productNormalizer,

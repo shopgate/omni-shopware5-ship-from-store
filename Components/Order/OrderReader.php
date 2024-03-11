@@ -159,6 +159,7 @@ class OrderReader extends DbalReader
 
         $data['shopCode'] = $this->config->get($data['shopId'])->get('shopCode');
         $data['imported'] = (bool) $this->config->get($data['shopId'])->get('setImportedTrueFlag');
+        $data['domain'] = 'shopgatedev.com';
         $data = ArrayUtil::flatToNested($data);
 
         return $data;

@@ -4,6 +4,7 @@ namespace SgateShipFromStore\Components\Order\Serializer\Converter;
 
 use Dustin\Encapsulation\EncapsulationInterface;
 use Dustin\ImpEx\Serializer\Converter\UnidirectionalConverter;
+use SgateShipFromStore\Components\Util\LineItem;
 
 class SubTotalCalculator extends UnidirectionalConverter
 {
@@ -17,7 +18,7 @@ class SubTotalCalculator extends UnidirectionalConverter
         $lineItems = $normalizedData['lineItems'] ?? [];
 
         foreach ($lineItems as $lineItem) {
-            if ($this->isProductLineItem($lineItem)) {
+            if (LineItem::isProductLineItem($lineItem)) {
                 $quantity = (int) $lineItem['quantity'] ?? 1;
                 $sum = $quantity * ((float) $lineItem['extendedPrice'] ?? 0.0);
                 $subTotal += $sum;
@@ -25,16 +26,5 @@ class SubTotalCalculator extends UnidirectionalConverter
         }
 
         return $subTotal;
-    }
-
-    private function isProductLineItem(array $lineItem): bool
-    {
-        $type = $lineItem['type'] ?? false;
-
-        if ($type === false) {
-            return false;
-        }
-
-        return \in_array($type, [0, 1]);
     }
 }

@@ -71,7 +71,7 @@ class BackendOrderSubscriber implements SubscriberInterface
                 $order['sgateShipFromStoreLink'] = null;
             } else {
                 if ($config->get('env') === 'staging' || empty($config->get('merchantCode'))) {
-                    $order['sgateShipFromStoreLink'] = sprintf('https://next.admin.shopgatepg.com/app/%s/sales/orders/%s', $config->get('merchantCode'), $sgateOrderNumbers[$order['id']]);
+                    $order['sgateShipFromStoreLink'] = sprintf('https://next.admin.shopgatedev.com/app/%s/sales/orders/%s', $config->get('merchantCode'), $sgateOrderNumbers[$order['id']]);
                 } else {
                     $order['sgateShipFromStoreLink'] = sprintf('https://next.admin.shopgate.com/app/%s/sales/orders/%s', $config->get('merchantCode'), $sgateOrderNumbers[$order['id']]);
                 }
