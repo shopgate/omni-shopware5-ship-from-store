@@ -130,6 +130,8 @@ SgateShipFromStore\Components\Order\Encapsulation\LineItem:
       groups: ['normalization', 'denormalization']
     price:
       groups: ['normalization', 'denormalization']
+    promoAmount:
+      groups: ['normalization', 'denormalization']
     type:
       groups: ['denormalization']
     product:
