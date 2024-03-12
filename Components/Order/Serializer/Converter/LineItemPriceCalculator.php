@@ -20,6 +20,6 @@ class LineItemPriceCalculator extends UnidirectionalConverter
 
         $priceBase = $normalizedData['product']['salePrice'] ?? $normalizedData['product']['price'];
 
-        return $normalizedData['quantity'] * round($priceBase, 2);
+        return round($normalizedData['quantity'] * $priceBase, 2);
     }
 }
