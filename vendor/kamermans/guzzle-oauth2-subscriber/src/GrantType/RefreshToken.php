@@ -50,7 +50,7 @@ class RefreshToken implements GrantTypeInterface
     public function getRawData(SignerInterface $clientCredentialsSigner, $refreshToken = null)
     {
         if (Helper::guzzleIs('>=', 6)) {
-            $request = (new \GuzzleHttp\Psr7\Request('POST', $this->client->getConfig()['base_uri']))
+            $request = (new \GuzzleHttp\Psr7\Request('POST', ''))
                         ->withBody($this->getPostBody($refreshToken))
                         ->withHeader('Content-Type', 'application/x-www-form-urlencoded');
         } else {
@@ -65,8 +65,9 @@ class RefreshToken implements GrantTypeInterface
         );
 
         $response = $this->client->send($request);
+        $rawData = json_decode($response->getBody(), true);
 
-        return json_decode($response->getBody(), true);
+        return is_array($rawData) ? $rawData : [];
     }
 
     /**

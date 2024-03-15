@@ -252,7 +252,7 @@ class ShopgateSdk
                 return '';
             case 'pg':
             case 'staging':
-                return 'pg';
+                return 'dev';
             case 'dev':
             case 'development':
                 return 'dev';

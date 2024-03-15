@@ -22,6 +22,7 @@
 
 namespace Shopgate\ConnectSdk\Http;
 
+use Exception;
 use GuzzleHttp\ClientInterface as GuzzleClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException as GuzzleRequestException;
@@ -66,14 +67,16 @@ class Client implements ClientInterface
     private $eventsWithoutPayload;
 
     /**
-     * @param string   $baseUri
-     * @param string   $merchantCode
+     * @param GuzzleClientInterface $client
+     * @param OAuth2Middleware $oAuth2Middleware
+     * @param string $baseUri
+     * @param string $merchantCode
      * @param string[] $eventsWithId
      * @param string[] $eventsWithotPayload
      */
     public function __construct(
         GuzzleClientInterface $client,
-        OAuth2Middleware $oAuth2Middleware,
+        OAuth2Middleware      $oAuth2Middleware,
                               $baseUri,
                               $merchantCode,
                               $eventsWithId = ['entityUpdated', 'entityDeleted'],
@@ -118,12 +121,12 @@ class Client implements ClientInterface
         if (empty($accessTokenPath)) {
             $envSuffix = $env ?: 'production';
             $suffix = md5("{$envSuffix}-{$clientId}-{$clientSecret}-{$merchantCode}-{$username}-{$password}");
-            $accessTokenPath = __DIR__."/../access_token-{$suffix}.txt";
+            $accessTokenPath =  __DIR__ . "/../access_token-{$suffix}.txt";
         }
 
         $reAuthClient = new \GuzzleHttp\Client(
             [
-                'base_uri' => rtrim(str_replace('{service}', 'auth', $baseUri), '/').'/oauth/token',
+                'base_uri' => rtrim(str_replace('{service}', 'auth', $baseUri), '/') . '/oauth/token'
             ]
         );
 
@@ -135,20 +138,20 @@ class Client implements ClientInterface
                     'client_secret' => $clientSecret,
                     'merchant_code' => $merchantCode,
                     'username' => $username,
-                    'password' => $password,
+                    'password' => $password
                 ]
             )
         );
 
         $OAuthMiddleware->setTokenPersistence(new PersistenceChain([
-            new EncryptedFile($accessTokenPath, $clientSecret),
+            new EncryptedFile($accessTokenPath, $clientSecret)
         ]));
 
         $handlerStack = HandlerStack::create();
         $client = new \GuzzleHttp\Client(
             [
                 'auth' => 'oauth',
-                'handler' => $handlerStack,
+                'handler' => $handlerStack
             ]
         );
 
@@ -167,7 +170,7 @@ class Client implements ClientInterface
      * @param LoggerInterface $logger
      * @param string          $template
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function enableRequestLogging(LoggerInterface $logger = null, $template = '')
     {
@@ -193,11 +196,14 @@ class Client implements ClientInterface
     public function buildServiceUrl($serviceName, $path = '', $version = 'v1')
     {
         return str_replace('{service}', $serviceName, $this->baseUri)
-            ."/{$version}"
-            ."/merchants/{$this->merchantCode}"
-            .'/'.ltrim($path, '/');
+            . "/{$version}"
+            . "/merchants/{$this->merchantCode}"
+            . '/' . ltrim($path, '/');
     }
 
+    /**
+     * @param callable $middleware
+     */
     public function addMiddleware(callable $middleware)
     {
         /** @var HandlerStack $handlerStack */
@@ -226,7 +232,7 @@ class Client implements ClientInterface
         }
 
         // query parsing, conversion of bools to strings & JSON encode filters if set
-        $query = Value::arrayBool2String((array) Value::elvis($options, 'query', []));
+        $query = Value::arrayBool2String((array)Value::elvis($options, 'query', []));
         if (!empty($query['filters']) && (is_array($query['filters']) || is_object($query['filters']))) {
             $query['filters'] = Json::encode($query['filters']);
         }
@@ -249,7 +255,7 @@ class Client implements ClientInterface
 
         $httpClientOptions = [
             'connect_timeout' => 5.0,
-            'body' => $body,
+            'body' => $body
         ];
 
         if (!empty($headers)) {
@@ -264,17 +270,16 @@ class Client implements ClientInterface
         $version = Value::elvis($options, 'version', 'v1');
         $path = Value::elvis($options, 'path', '');
         $url = Value::elvis($options, 'url', '');
-        $uri = !empty($url) ? $url.$path : $this->buildServiceUrl($options['service'], $path, $version);
+        $uri = !empty($url) ? $url . $path : $this->buildServiceUrl($options['service'], $path, $version);
 
         $result = $this->send($method, $uri, $httpClientOptions)->getBody()->getContents();
-
         return $json && !empty($result) ? Json::decode($result) : $result;
     }
 
     /**
      * @param string $method
      * @param string $uri
-     * @param array  $options
+     * @param array $options
      *
      * @return ResponseInterface
      *
@@ -282,7 +287,7 @@ class Client implements ClientInterface
      * @throws NotFoundException
      * @throws RequestException
      * @throws UnknownException
-     * @throws TokenPersistenceException      might be thrown when oAuth2 middleware is active
+     * @throws TokenPersistenceException might be thrown when oAuth2 middleware is active
      */
     private function send($method, $uri, $options)
     {
@@ -292,15 +297,22 @@ class Client implements ClientInterface
             $statusCode = $e->getResponse() ? $e->getResponse()->getStatusCode() : 0;
 
             if ($statusCode === 404) {
-                throw new NotFoundException($e->getResponse() && $e->getResponse()->getBody() ? $e->getResponse()->getBody()->getContents() : $e->getMessage());
+                throw new NotFoundException(
+                    $e->getResponse() && $e->getResponse()->getBody() ? $e->getResponse()->getBody()->getContents()
+                        : $e->getMessage()
+                );
             }
 
-            throw new RequestException($statusCode, $e->getResponse() && $e->getResponse()->getBody() ? $e->getResponse()->getBody()->getContents() : $e->getMessage());
+            throw new RequestException(
+                $statusCode,
+                $e->getResponse() && $e->getResponse()->getBody() ? $e->getResponse()->getBody()->getContents()
+                    : $e->getMessage()
+            );
         } catch (GuzzleException $e) {
             throw new UnknownException($e->getMessage());
         } catch (AccessTokenRequestException $e) {
             throw new AuthenticationInvalidException($e->getMessage());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new UnknownException($e->getMessage());
         }
     }
@@ -308,12 +320,12 @@ class Client implements ClientInterface
     public function publish($eventName, $entityName, $entities, $entityIdPropertyName = 'code')
     {
         $events = array_map(function ($entity) use ($eventName, $entityName, $entityIdPropertyName) {
-            $entity = (array) $entity;
+            $entity = (array)$entity;
 
             $event = [
                 'event' => $eventName,
                 'entity' => $entityName,
-                'payload' => in_array($eventName, $this->eventsWithoutPayload) ? [] : $entity,
+                'payload' => in_array($eventName, $this->eventsWithoutPayload) ? [] : $entity
             ];
 
             // extract entityId from entity on events that require it
@@ -334,7 +346,7 @@ class Client implements ClientInterface
             'event' => 'entityDeleted',
             'entity' => $entityName,
             'entityId' => $entityId,
-            'payload' => new \stdClass(),
+            'payload' => new \stdClass()
         ]]);
     }
 
@@ -342,7 +354,6 @@ class Client implements ClientInterface
      * @param array[] $events
      *
      * @return ResponseInterface
-     *
      * @throws AuthenticationInvalidException
      * @throws NotFoundException
      * @throws RequestException
@@ -359,7 +370,7 @@ class Client implements ClientInterface
             [
                 'json' => ['events' => $events],
                 'http_errors' => true,
-                'connect_timeout' => 5.0,
+                'connect_timeout' => 5.0
             ]
         );
     }
