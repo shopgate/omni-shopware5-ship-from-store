@@ -38,6 +38,11 @@ class LineItem extends PropertyEncapsulation
     protected $price;
 
     /**
+     * @var float
+     */
+    protected $promoAmount;
+
+    /**
      * @var Product
      */
     protected $product;

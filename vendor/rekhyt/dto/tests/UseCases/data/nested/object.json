@@ -1,8 +1,0 @@
-{
-  "type": "object",
-  "properties": {
-    "i": {
-      "$ref": "../integer.json"
-    }
-  }
-}
