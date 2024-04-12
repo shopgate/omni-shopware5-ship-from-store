@@ -35,6 +35,6 @@ class LineItemPromoAmountCalculator extends UnidirectionalConverter
         $price = $this->lineItemPriceCalculator->convert($normalizedData['price'], $object, $path, 'price', $normalizedData);
         $extendedPrice = $this->lineItemExtendedPriceCalculator->convert($normalizedData['extendedPrice'], $object, $path, 'extendedPrice', $normalizedData);
 
-        return $price === $extendedPrice ? null : $extendedPrice - $price;
+        return $extendedPrice - $price;
     }
 }
