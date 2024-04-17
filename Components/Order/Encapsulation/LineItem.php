@@ -40,6 +40,11 @@ class LineItem extends PropertyEncapsulation
     /**
      * @var float
      */
+    protected $unitPromoAmount;
+
+    /**
+     * @var float
+     */
     protected $promoAmount;
 
     /**

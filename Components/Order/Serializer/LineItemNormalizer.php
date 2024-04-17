@@ -8,6 +8,7 @@ use SgateShipFromStore\Components\Order\Encapsulation\Product;
 use SgateShipFromStore\Components\Order\Serializer\Converter\LineItemPriceCalculator;
 use SgateShipFromStore\Components\Order\Serializer\Converter\LineItemExtendedPriceCalculator;
 use SgateShipFromStore\Components\Order\Serializer\Converter\LineItemPromoAmountCalculator;
+use SgateShipFromStore\Components\Order\Serializer\Converter\LineItemUnitPromoAmountCalculator;
 use SgateShipFromStore\Framework\Serializer\EncapsulationNormalizer;
 use SgateShipFromStore\Components\Order\Encapsulation\LineItem;
 
@@ -30,6 +31,7 @@ class LineItemNormalizer extends EncapsulationNormalizer
                 'shipToAddressSequenceIndex' => new IntConverter(),
                 'price' => $lineItemPriceCalculator,
                 'extendedPrice' => $lineItemExtendedPriceCalculator,
+                'unitPromoAmount' => new LineItemUnitPromoAmountCalculator(),
                 'promoAmount' => new LineItemPromoAmountCalculator(
                     $lineItemPriceCalculator,
                     $lineItemExtendedPriceCalculator
