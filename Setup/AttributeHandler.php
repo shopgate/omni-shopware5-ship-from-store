@@ -161,8 +161,9 @@ class AttributeHandler
                 'name' => 'sgate_ship_from_store_exported',
                 'type' => TypeMapping::TYPE_BOOLEAN,
                 'config' => [
-                    'displayInBackend' => false,
+                    'displayInBackend' => true,
                     'custom' => false,
+                    'label' => 'Übertragung zu Shopgate abgeschlossen'
                 ],
             ], [
                 'table' => 's_order_attributes',
