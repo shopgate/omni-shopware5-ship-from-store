@@ -4,7 +4,7 @@
     <label>Shopgate Ship-from-Store</label>
     <label lang="de">Shopgate Ship-from-Store</label>
 
-    <version>1.4.5-beta.6</version>
+    <version>1.4.5</version>
     <copyright>(c) by Shopgate GmbH</copyright>
     <link>https://shopgate.com</link>
     <author>Shopgate GmbH</author>
@@ -122,6 +122,12 @@
         </changes>
         <changes>
             - Payment name will be added to customer note.
+        </changes>
+    </changelog>
+
+    <changelog version="1.4.5">
+        <changes lang="de">
+            - Die Felder "unitPromoAmount" und "promoAmount" an den einzelnen Bestellpositionen werden jetzt mit exportiert und fließen in die Berechnung der Gesamtsummen.
         </changes>
     </changelog>
 
