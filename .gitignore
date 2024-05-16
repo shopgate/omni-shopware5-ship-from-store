@@ -1,4 +1,4 @@
-vendor/
+src/Backend/SgateShipFromStore/vendor/
 .idea/
 release/package/
 release/*.zip
