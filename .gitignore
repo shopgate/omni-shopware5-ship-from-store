@@ -1,3 +1,6 @@
-composer.lock
+vendor/
 .idea/
+release/package/
+release/*.zip
 .DS_Store
+composer.lock
