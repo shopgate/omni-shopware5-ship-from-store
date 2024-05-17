@@ -1,6 +1,11 @@
-src/Backend/SgateShipFromStore/vendor/
+src/SgateShipFromStore/vendor/
 .idea/
 release/package/
 release/*.zip
 .DS_Store
 composer.lock
+.php-cs.cache
+.php_cs.cache
+.php-cs-fixer.cache
+.phpunit.result.cache
+php-cs-fixer

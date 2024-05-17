@@ -1,0 +1,10 @@
+.git/
+.gitignore
+.travis.yml
+.php-cs.cache
+.php-cs.dist
+.travis.yml
+build_release_package.sh
+release/
+*.DS_Store
+__MACOSX

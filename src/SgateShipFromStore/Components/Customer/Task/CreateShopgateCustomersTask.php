@@ -69,8 +69,7 @@ class CreateShopgateCustomersTask extends Task
                 $resultCustomers['meta']['totalItemCount'] > 0 &&
                 !empty($resultCustomers['customers']) &&
                 count($resultCustomers['customers']) > 0
-            )
-            {
+            ) {
                 foreach ($result['ids'] as $index => $resultId) {
                     foreach ($resultCustomers['customers'] as $resultCustomer) {
                         if (!empty($resultCustomer['id']) &&

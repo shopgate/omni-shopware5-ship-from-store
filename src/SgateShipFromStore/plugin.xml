@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <plugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="../../../engine/Shopware/Components/Plugin/schema/plugin.xsd">
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/5.3/engine/Shopware/Components/Plugin/schema/plugin.xsd">
     <label>Shopgate Ship-from-Store</label>
     <label lang="de">Shopgate Ship-from-Store</label>
 
-    <version>1.4.5</version>
+    <version>1.4.6-alpha.1</version>
     <copyright>(c) by Shopgate GmbH</copyright>
     <link>https://shopgate.com</link>
     <author>Shopgate GmbH</author>
