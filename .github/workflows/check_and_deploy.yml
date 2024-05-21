@@ -11,13 +11,13 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: 8.3
-      - name: Install dependencies (for CS fixer)
+      - name: Install dependencies
         run: composer install
       - name: Audit
         run: composer audit
       - name: Code Style
         run: |
-          curl -L https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/releases/download/v3.50.0/php-cs-fixer.phar -o php-cs-fixer
+          curl -L https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/releases/download/v3.57.2/php-cs-fixer.phar -o php-cs-fixer
           chmod a+x php-cs-fixer
           ./php-cs-fixer fix --config=.php-cs-fixer.dist.php --cache-file=.php-cs.cache --diff --dry-run --verbose
 

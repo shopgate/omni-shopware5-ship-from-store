@@ -4,7 +4,10 @@
     "homepage": "https://github.com/shopgate/cart-integration-shopware",
     "license": "Apache-2.0",
     "config": {
-        "vendor-dir": "src/SgateShipFromStore/vendor"
+        "vendor-dir": "src/SgateShipFromStore/vendor",
+        "audit": {
+            "abandoned": "report"
+        }
     },
     "scripts": {
         "test": "phpunit",
