@@ -84,12 +84,12 @@ jobs:
       - name: Get tag name
         id: set-tag
         run: echo "TAG_NAME=${GITHUB_REF:10}" >> $GITHUB_OUTPUT
-      - name: Load from cache (PHP 5)
+      - name: Load from cache (regular ZIP)
         uses: actions/cache@v4
         with:
           path: ./release/shopgate-shopware5-sfs-${{ steps.set-tag.outputs.TAG_NAME }}.zip
           key: ${{ steps.set-tag.outputs.TAG_NAME }}-${{ github.sha }}-regular
-      - name: Load from cache (PHP 7 & 8)
+      - name: Load from cache (Guzzle 7.4 ZIP)
         uses: actions/cache@v4
         with:
           path: ./release/shopgate-shopware5-sfs-${{ steps.set-tag.outputs.TAG_NAME }}-guzzle-7.4.zip
