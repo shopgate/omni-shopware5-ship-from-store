@@ -35,70 +35,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## 1.0.0 - 2023-07-26
 Initial release.
 
-
-
-    <changelog version="1.3.0">
-        <changes lang="de">
-            - Performance des Lagerbestandsimports verbessert
-        </changes>
-        <changes>
-            - Optimized performance of inventory import
-        </changes>
-    </changelog>
-
-    <changelog version="1.4.0">
-        <changes lang="de">
-            - Versendete Menge der Bestellpositionen wird mit Shopgate abgeglichen
-            - Zeitzone gefixt
-        </changes>
-        <changes>
-            - Shipped amount of order line items will be synced with Shopgate
-            - Fixed timezone
-        </changes>
-    </changelog>
-
-    <changelog version="1.4.1">
-        <changes lang="de">
-            - Versand-Menge der Positionen wird nur noch gesetzt, wenn die Bestellung nicht storniert ist
-        </changes>
-        <changes>
-            - Only set shipped amount of line items of order is not canceled
-        </changes>
-    </changelog>
-
-    <changelog version="1.4.2">
-        <changes lang="de">
-            - Versand-Menge der Positionen wird nur noch gesetzt, wenn Bestellung und Position nicht storniert sind
-        </changes>
-        <changes>
-            - Only set shipped amount of line items of order and line item are not canceled
-        </changes>
-    </changelog>
-
-    <changelog version="1.4.3">
-        <changes lang="de">
-            - Versand-Menge der Positionen wird nur noch gesetzt, wenn Position sich im Status "fulfilled" befindet
-        </changes>
-        <changes>
-            - Only set shipped amount of line items if line item is in state "fulfilled"
-        </changes>
-    </changelog>
-
-    <changelog version="1.4.4">
-        <changes lang="de">
-            - Der Name der Bezahlart wird an die Kundennotiz angehangen.
-        </changes>
-        <changes>
-            - Payment name will be added to customer note.
-        </changes>
-    </changelog>
-
-    <changelog version="1.4.5">
-        <changes lang="de">
-            - Die Felder "unitPromoAmount" und "promoAmount" an den einzelnen Bestellpositionen werden jetzt mit exportiert und fließen in die Berechnung der Gesamtsummen.
-        </changes>
-    </changelog>
-
-[Unreleased]: https://github.com/shopgate/cart-integration-magento2-export/compare/2.9.31...HEAD
+[Unreleased]: https://github.com/shopgate/omni-shopware5-ship-from-store/compare/1.4.5...HEAD
+[1.4.5]: https://github.com/shopgate/omni-shopware5-ship-from-store/compare/b6110598...1.4.5
 [1.4.4]: https://github.com/shopgate/omni-shopware5-ship-from-store/compare/44320df4...b6110598
 [1.2.0]: https://github.com/shopgate/omni-shopware5-ship-from-store/compare/a4571767...44320df4
