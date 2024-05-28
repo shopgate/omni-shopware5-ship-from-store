@@ -21,7 +21,7 @@ jobs:
           chmod a+x php-cs-fixer
           ./php-cs-fixer fix --config=.php-cs-fixer.dist.php --cache-file=.php-cs.cache --diff --dry-run --verbose
 
-  build-zip-regular:
+  build-zip-default:
     name: Build the ZIP
     needs: [check]
     runs-on: ubuntu-20.04
@@ -40,11 +40,13 @@ jobs:
         run: ./release/build_release_package.sh
         env:
           TAG_NAME: ${{ steps.set-tag.outputs.TAG_NAME }}
+      - name: Rename ZIP file
+        run: mv ./release/shopgate-shopware5-sfs-${{ steps.set-tag.outputs.TAG_NAME }}.zip ./release/shopgate-shopware5-sfs-${{ steps.set-tag.outputs.TAG_NAME }}-default.zip
       - name: Store to cache
         uses: actions/cache@v4
         with:
-          path: ./release/shopgate-shopware5-sfs-${{ steps.set-tag.outputs.TAG_NAME }}.zip
-          key: ${{ steps.set-tag.outputs.TAG_NAME }}-${{ github.sha }}-regular
+          path: ./release/shopgate-shopware5-sfs-${{ steps.set-tag.outputs.TAG_NAME }}-default.zip
+          key: ${{ steps.set-tag.outputs.TAG_NAME }}-${{ github.sha }}-default
 
   build-zip-guzzle-7-4:
     name: Build the ZIP with Guzzle 7.4 pinned
@@ -77,7 +79,7 @@ jobs:
 
   release:
     name: Create GitHub release & attach ZIP files
-    needs: [build-zip-regular, build-zip-guzzle-7-4]
+    needs: [build-zip-default, build-zip-guzzle-7-4]
     if: startsWith(github.ref, 'refs/tags/') # only tags
     runs-on: ubuntu-20.04
     steps:
@@ -87,8 +89,8 @@ jobs:
       - name: Load from cache (regular ZIP)
         uses: actions/cache@v4
         with:
-          path: ./release/shopgate-shopware5-sfs-${{ steps.set-tag.outputs.TAG_NAME }}.zip
-          key: ${{ steps.set-tag.outputs.TAG_NAME }}-${{ github.sha }}-regular
+          path: ./release/shopgate-shopware5-sfs-${{ steps.set-tag.outputs.TAG_NAME }}-default.zip
+          key: ${{ steps.set-tag.outputs.TAG_NAME }}-${{ github.sha }}-default
       - name: Load from cache (Guzzle 7.4 ZIP)
         uses: actions/cache@v4
         with:
@@ -103,7 +105,7 @@ jobs:
           prerelease: true
           fail_on_unmatched_files: true
           files: |
-            ./release/shopgate-shopware5-sfs-${{ steps.set-tag.outputs.TAG_NAME }}.zip
+            ./release/shopgate-shopware5-sfs-${{ steps.set-tag.outputs.TAG_NAME }}-default.zip
             ./release/shopgate-shopware5-sfs-${{ steps.set-tag.outputs.TAG_NAME }}-guzzle-7.4.zip
 
   notify-release-success:
