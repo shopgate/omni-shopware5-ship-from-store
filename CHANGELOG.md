@@ -36,7 +36,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## 1.0.0 - 2023-07-26
 Initial release.
 
-[Unreleased]: https://github.com/shopgate/omni-shopware5-ship-from-store/compare/1.4.5...HEAD
+[Unreleased]: https://github.com/shopgate/omni-shopware5-ship-from-store/compare/1.4.6...HEAD
+[1.4.6]: https://github.com/shopgate/omni-shopware5-ship-from-store/compare/1.4.5...1.4.6
 [1.4.5]: https://github.com/shopgate/omni-shopware5-ship-from-store/compare/b6110598...1.4.5
 [1.4.4]: https://github.com/shopgate/omni-shopware5-ship-from-store/compare/44320df4...b6110598
 [1.2.0]: https://github.com/shopgate/omni-shopware5-ship-from-store/compare/a4571767...44320df4
