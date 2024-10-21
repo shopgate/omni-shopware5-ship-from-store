@@ -73,7 +73,7 @@ class OrderNormalizer extends EncapsulationNormalizer
                             $this
                         )
                     ),
-                    new Filter(new LineItemFilter(0, 1))
+                    new Filter(new LineItemFilter(0, 1), Filter::REINDEX)
                 ),
                 'discountAmount' => new DiscountAmountCalculator(),
                 'subTotal' => new SubTotalCalculator(),
