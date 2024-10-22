@@ -4,16 +4,16 @@
     <label>Shopgate Ship-from-Store</label>
     <label lang="de">Shopgate Ship-from-Store</label>
 
-    <version>1.4.6</version>
+    <version>1.4.7</version>
     <copyright>(c) by Shopgate GmbH</copyright>
     <link>https://shopgate.com</link>
     <author>Shopgate GmbH</author>
     <license>proprietary</license>
     <compatibility minVersion="5.7.0"/>
 
-    <changelog version="1.4.6">
+    <changelog version="1.4.7">
         <changes lang="en">
-            - provide ZIP archives that can be uploaded and installed using the Shopware 5 plugin manager
+            - fixed error importing orders to Shopgate in some cases when changing line items
         </changes>
     </changelog>
 
