@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+## [1.4.8] - 2024-10-31
+### Fixed
+- line items of an order not exported to Shopgate when their associated product has no main image
+- line items of an order not exported to Shopgate when they don't have a product associated anymore
+
 ## [1.4.7] - 2024-10-22
 ### Fixed
 - error importing orders to Shopgate in some cases when changing line items
@@ -40,7 +45,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## 1.0.0 - 2023-07-26
 Initial release.
 
-[Unreleased]: https://github.com/shopgate/omni-shopware5-ship-from-store/compare/1.4.7...HEAD
+[Unreleased]: https://github.com/shopgate/omni-shopware5-ship-from-store/compare/1.4.8...HEAD
+[1.4.8]: https://github.com/shopgate/omni-shopware5-ship-from-store/compare/1.4.7...1.4.8
 [1.4.7]: https://github.com/shopgate/omni-shopware5-ship-from-store/compare/1.4.6...1.4.7
 [1.4.6]: https://github.com/shopgate/omni-shopware5-ship-from-store/compare/1.4.5...1.4.6
 [1.4.5]: https://github.com/shopgate/omni-shopware5-ship-from-store/compare/b6110598...1.4.5
