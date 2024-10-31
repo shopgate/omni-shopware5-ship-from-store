@@ -166,85 +166,81 @@ class OrderReader extends DbalReader
 
     protected function fetchLineItems(int $orderId): array
     {
-        $data = $this->connection->createQueryBuilder()
-            ->select([
-                '`line_item`.`id` as `code`',
-                '`line_item`.`quantity` as `quantity`',
+        $query = 'SELECT
+			 `line_item`.`id` as `code`,
+			 `line_item`.`quantity` as `quantity`,
+			 `line_item`.`name` as `product.name`,
+			 IF(
+				NULLIF(`article_price`.`pseudoprice`, 0) IS NULL,
+				`article_price`.`price` * (1+(`tax`.`tax` / 100)),
+				`article_price`.`pseudoprice` * (1+(`tax`.`tax` / 100))
+			) as `product.price`,
+			IF(
+				NULLIF(`article_price`.`pseudoprice`, 0) IS NOT NULL,
+				`article_price`.`price` * (1+(`tax`.`tax` / 100)),
+				NULL
+			) as `product.salePrice`,
+			`order`.`currency` as `product.currencyCode`,
+			NULLIF(`article_detail`.`ean`, "") as `product.identifiers.ean`,
+			`line_item`.`articleordernumber` as `product.identifiers.sku`,
+			`order`.`language` as `shopId`,
+			IF(
+				NULLIF(`article_price`.`pseudoprice`, 0) IS NULL,
+				IF(
+					`order`.`net` = 1 AND `order`.`taxfree` = 0,
+					`line_item`.`price` * (1+(`line_item`.`tax_rate` / 100)),
+					`line_item`.`price`
+				),
+				IF(
+					`order`.`taxfree` = 0,
+					`article_price`.`pseudoprice` * (1+(`tax`.`tax` / 100)),
+					`article_price`.`pseudoprice`
+				)
+			) as `price`,
+			IF(
+				`order`.`net` = 1 AND `order`.`taxfree` = 0,
+				`line_item`.`price` * (1+(`line_item`.`tax_rate` / 100)),
+				`line_item`.`price`
+			) as `extendedPrice`,
+			IF(
+				`order`.`net` = 1,
+				IF(
+					`order`.`taxfree` = 0,
+					`line_item`.`price` * (`line_item`.`tax_rate` / 100),
+					0
+				),
+				(`line_item`.`price` / (1+(`line_item`.`tax_rate` / 100))) * (`line_item`.`tax_rate` / 100)
+			) as `taxAmount`,
+			`line_item`.`modus` as `type`,
+			`order`.`currency` as `currencyCode`,
+			`media`.`path` as `product.mediaPath`,
+			`article_detail`.`id` as `product.articleDetailId`
+			
+			FROM `s_order_details` `line_item`
+			LEFT JOIN `s_order` `order` ON `line_item`.`orderID` = `order`.`id`
+			LEFT JOIN `s_core_shops` `shop` ON `order`.`language` = `shop`.`id`
+			LEFT JOIN `s_core_customergroups` `shop_customer_group` ON `shop`.`customer_group_id` = `shop_customer_group`.`id`
+			LEFT JOIN `s_articles_prices` `article_price` ON
+				`line_item`.`articleDetailID` = `article_price`.`articledetailsID` AND `article_price`.`pricegroup` = `shop_customer_group`.`groupkey` AND `article_price`.`from` = 1
+			LEFT JOIN `s_articles` `article` ON `line_item`.`articleID` = `article`.`id`
+			LEFT JOIN `s_articles_details` `article_detail` ON `line_item`.`articleDetailID` = `article_detail`.`id`
+			LEFT JOIN `s_core_tax` `tax` ON `article`.`taxID` = `tax`.`id`
+			LEFT JOIN `s_articles_img` `article_media` ON `article`.`id` = `article_media`.`articleID` AND `article_media`.`main` = 1
+			LEFT JOIN `s_media` `media` ON `article_media`.`media_id` = `media`.`id`
+			WHERE `line_item`.`orderID` = :orderId
+			GROUP BY `line_item`.`id`';
 
-                '`line_item`.`name` as `product.name`',
-
-                'IF(
-                    NULLIF(`article_price`.`pseudoprice`, 0) IS NULL,
-                    `article_price`.`price` * (1+(`tax`.`tax` / 100)),
-                    `article_price`.`pseudoprice` * (1+(`tax`.`tax` / 100))
-                ) as `product.price`',
-                'IF(
-                    NULLIF(`article_price`.`pseudoprice`, 0) IS NOT NULL,
-                    `article_price`.`price` * (1+(`tax`.`tax` / 100)),
-                    NULL
-                ) as `product.salePrice`',
-
-                '`order`.`currency` as `product.currencyCode`',
-                'NULLIF(`article_detail`.`ean`, "") as `product.identifiers.ean`',
-                '`article_detail`.`ordernumber` as `product.identifiers.sku`',
-                '`order`.`language` as `shopId`',
-
-                'IF(
-                    NULLIF(`article_price`.`pseudoprice`, 0) IS NULL,
-                    IF(
-                        `order`.`net` = 1 AND `order`.`taxfree` = 0,
-                        `line_item`.`price` * (1+(`line_item`.`tax_rate` / 100)),
-                        `line_item`.`price`
-                    ),
-                    IF(
-                        `order`.`taxfree` = 0,
-                        `article_price`.`pseudoprice` * (1+(`tax`.`tax` / 100)),
-                        `article_price`.`pseudoprice`
-                    )
-                ) as `price`',
-
-                'IF(
-                    `order`.`net` = 1 AND `order`.`taxfree` = 0,
-                    `line_item`.`price` * (1+(`line_item`.`tax_rate` / 100)),
-                    `line_item`.`price`
-                ) as `extendedPrice`',
-
-                'IF(
-                    `order`.`net` = 1,
-                    IF(
-                        `order`.`taxfree` = 0,
-                        `line_item`.`price` * (`line_item`.`tax_rate` / 100),
-                        0
-                    ),
-                    (`line_item`.`price` / (1+(`line_item`.`tax_rate` / 100))) * (`line_item`.`tax_rate` / 100)
-                ) as `taxAmount`',
-                '`line_item`.`modus` as `type`',
-                '`order`.`currency` as `currencyCode`',
-                '`media`.`path` as `product.mediaPath`',
-                '`article_detail`.`id` as `product.articleDetailId`',
-            ])
-            ->from('`s_order_details`', '`line_item`')
-            ->leftJoin('`line_item`', '`s_articles_prices`', '`article_price`', '`line_item`.`articleDetailID` = `article_price`.`articledetailsID`')
-            ->leftJoin('`line_item`', '`s_articles`', '`article`', '`line_item`.`articleID` = `article`.`id`')
-            ->leftJoin('`line_item`', '`s_articles_details`', '`article_detail`', '`line_item`.`articleDetailID` = `article_detail`.`id`')
-            ->leftJoin('`article`', '`s_core_tax`', '`tax`', '`article`.`taxID` = `tax`.`id`')
-            ->leftJoin('`line_item`', '`s_order`', '`order`', '`line_item`.`orderID` = `order`.`id`')
-            ->leftJoin('`order`', '`s_core_shops`', '`shop`', '`order`.`language` = `shop`.`id`')
-            ->leftJoin('`shop`', '`s_core_customergroups`', '`shop_customer_group`', '`shop`.`customer_group_id` = `shop_customer_group`.`id`')
-            ->leftJoin('`article`', '`s_articles_img`', '`article_media`', '`article`.`id` = `article_media`.`articleID`')
-            ->leftJoin('`article_media`', '`s_media`', '`media`', '`article_media`.`media_id` = `media`.`id`')
-            ->where('`line_item`.`orderID` = :orderId')
-            ->andWhere('`article_price`.`pricegroup` = `shop_customer_group`.`groupkey` OR `line_item`.`modus` <> 0')
-            ->andWhere('`article_price`.`from` = 1 OR `line_item`.`modus` <> 0')
-            ->andWhere('`article_media`.`main` = 1 OR `article_media`.`main` IS NULL')
-            ->groupBy('`line_item`.`id`')
-            ->setParameter('orderId', $orderId)
-            ->execute()->fetchAll();
+        $data = $this->connection->fetchAllAssociative(
+            $query,
+            ['orderId' => $orderId]
+        );
 
         $articleDetailIds = [];
-        foreach ($data as $lineItem) {
+        foreach($data as $lineItem) {
             $articleDetailIds[] = $lineItem['product.articleDetailId'];
         }
+
+        $articleDetailIds = array_filter($articleDetailIds);
 
         $dataVariantConfigurations = $this->connection->createQueryBuilder()
             ->select([
